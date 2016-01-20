@@ -58,6 +58,7 @@ function addTextField(idName, width, placeholder, inputid, xPosition, yPosition,
     $('#' + inputid + "-button").on('click', thisCallback);
 }
 
+/*
 addDropdown("#bodyid", "Test", "freeDropdown", "freeList", 100, 100);
 addItems("#freeList", "Yo this is cool!");
 addItems("#freeList", "Yo yo yo!!!!");
@@ -73,7 +74,7 @@ document.getElementById("demo").innerHTML = "X: " + xPosition + " " + "Y: " + yP
 // ^ This is the "X: _ Y:_" text on the screen. It's attached to the "Javascript" button
 
 
-/*$('#dropButton').on('click', function (e){ //When button is clicked
+$('#dropButton').on('click', function (e){ //When button is clicked
     var inputText = document.getElementById('searchBar').value; //This gets value from <input>
     if(inputText != ""){
         addItems("#drop", inputText);
@@ -86,5 +87,6 @@ $(function() {
     };
     change("this is the first change");
     change("this is the second change");
+	
 });*/
 

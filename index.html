@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>abstract algebra project</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/GUI.js"></script> <!---include gui -->
+	
+      
+  </head>
+  <body id="bodyid" bgcolor = "#6a7f10">
+    <p id="demo"></p>
+    <p id="positionDemo"></p>
+	
+	<script type="text/javascript">
+		function toSymTable() {
+			window.location.href = "Table.html";
+		}
+		
+		function toPlayground() {
+		
+		}
+		
+		function toSymTri() {
+			window.location.href = "first.html";
+		}
+		
+		
+		addButton("#bodyid", "Playground", "Playground2", 700, 600, "btn-lg",toPlayground);
+		addButton("#bodyid", "Triangle Symmetry", "SymTri", 1100, 120, "btn-lg",toSymTri);
+		addButton("#bodyid", "Symmetry Table", "SymTable", 150, -200, "btn-lg", toSymTable);
+		
+		
+	</script>
+    <!--<button class="btn btn-success" type="button">Test</button>
+    <button class="btn btn-warning" type="button">Test</button>
+    <button class="btn btn-info" type="button">Test</button>-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    
+  </body>
+</html>
