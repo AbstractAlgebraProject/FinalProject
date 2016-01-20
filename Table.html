@@ -104,11 +104,15 @@
 				view.viewSize.height = height;
 
 				function drawGrid(){									//draws gridlines
-					for(i = 0; i < tileNum + 1; i++){
-						var lineX = new Path.Line(new Point(0, i * boxHeight), new Point(tileNum  * boxHeight, i * boxHeight));
-						var lineY = new Path.Line(new Point(i * boxHeight, 0), new Point(i * boxHeight, tileNum* boxHeight));
-						lineX.strokeColor = 'black';	
-						lineY.strokeColor = 'black';
+					for(i = 1; i < tileNum ; i++){
+						document.getElementById('text' + '0' + i).style.backgroundColor = '#6a7f10';
+						document.getElementById('text' + '0' + i).style.color = '#FFFFFF';
+						document.getElementById('text' + '0' + i).value = Symmetries[i-1];
+						document.getElementById('text' + '0' + i).disabled = true;
+						document.getElementById('text' + i + '0').style.backgroundColor = '#6a7f10';
+						document.getElementById('text' + i + '0').style.color = '#FFFFFF';
+						document.getElementById('text' + i + '0').disabled = true;
+						document.getElementById('text' + i + '0').value = Symmetries[i-1];
 					}
 
 					function onResize(event){
@@ -142,8 +146,8 @@
 				}
 
 				function addInputs(){									//calls createTextBox method
-					for(i = 1; i < tileNum; i++){
-						for(k = 1; k < tileNum; k++){
+					for(i = 0; i < tileNum; i++){
+						for(k = 0; k < tileNum; k++){
 							createTextBox();
 						}
 					}
@@ -161,26 +165,30 @@
 					textBox.style.fontSize = "20pt";
 					textBox.maxLength = "6";
 					textBox.type = "text";
+					textBox.style.color = '#FFFFFF';
 					textBox.id = 'text' + i + k;
 					
 					document.body.appendChild(textBox);
 				}
 				
+				
+				
+				addInputs();
+				
 				drawGrid();
 				fillTable();
-				addInputs();
 
 				view.onFrame = function(event){									//checks all inputs for correctness/incorrectness
 					for(i = 0; i < tileNum-1; i++){
 						for(k = 0; k < tileNum-1; k++){
 							if((document.getElementById('text' + (i+1) + (k+1)).value).toUpperCase() === Simplify(Symmetries[i] + Symmetries[k])){
-								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "lime";
+								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "#6a7f10";
 							}
 							else if(document.getElementById('text' + (i+1) + (k+1)).value === ""){
-								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "dodgerblue";
+								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "#FFFFFF";
 							}
 							else{
-								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "red";
+								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "#e60000";
 							}	
 						}
 					}
@@ -190,7 +198,7 @@
 			}
 
 
-			var myTable = symmetryTable(2);
+			var myTable = symmetryTable(3);
 			
 
 	</script>
