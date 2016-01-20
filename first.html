@@ -257,13 +257,14 @@
 	      	myTri.setState();		//sets initial state
 	      	
 	      	var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
-	      	myTri2.setSym("FRFRFRRFFRRFF", true);			//starts flipped
+	      	myTri2.setSym(randString(), true);			//starts flipped
 	      	myTri2.timeBound = false;	//set to not be time-bound default=true
 	      	myTri2.setState();			//sets initial state
 
 	      	
 	      	var but1 = new sButton(new Point(325, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'R', but1f); //create new rotate button
 	      	var but2 = new sButton(new Point(525, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'F', but2f); //create new flip button
+			var butCheck = new sButton(new Point(725, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'Check', butCheckSet); //create new flip button
 
 	      	function but1f(event) {	//function for rotation button press
 	      		myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
@@ -274,6 +275,23 @@
 	      		myTri.setSym(myTri.symmetry.string + "F", false);	//appends "F" to the symmetry string
 	      		//alert(myTri.symmetry.string);
 	      	}
+			
+			function butCheckSet(event)
+			{
+				if (myTri.currentABC === myTri2.currentABC)
+				{
+					numCorrect = numCorrect + 1;
+					var tmpstr = "Correct: " + numCorrect;
+					numCorrectTxt.content = tmpstr;
+				}
+			}
+			
+			function randString()
+			{
+				var strings = ["FF", "R", "RR", "F", "FR", "RF"];
+				var randomnumber = Math.floor(Math.random()*6)
+				return strings[randomnumber];
+			}
 	      	
 			/*var symText = new PointText(new Point(100, 100));	//text to display current symmstring
 			symText.fillColor = 'red';
@@ -283,6 +301,13 @@
 			fpsText.fillColor = 'red';
 			fpsText.content = '';
 			fpsText.scale(5);*/
+			
+			var numCorrectTxt = new PointText(new Point(1200, 50));
+			numCorrectTxt.fillColor = new Color(.453, .105, .277);
+			numCorrectTxt.content = "Correct: 0";
+			numCorrectTxt.scale(5);
+			
+			var numCorrect = 0;
 
 			var lastLoop = new Date;	//fps calculation time 
 
