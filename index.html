@@ -11,14 +11,12 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+	
 	<script src="js/GUI.js"></script> <!---include gui -->
 	
       
   </head>
   <body id="bodyid" bgcolor = "#6a7f10">
-    <p id="demo"></p>
-    <p id="positionDemo"></p>
 	
 	<script type="text/javascript">
 		function toSymTable() {
@@ -26,7 +24,7 @@
 		}
 		
 		function toPlayground() {
-		
+			window.location.href = "Playground.html"
 		}
 		
 		function toSymTri() {
@@ -34,9 +32,9 @@
 		}
 		
 		
-		addButton("#bodyid", "Playground", "Playground2", 700, 600, "btn-lg",toPlayground);
-		addButton("#bodyid", "Triangle Symmetry", "SymTri", 1100, 120, "btn-lg",toSymTri);
-		addButton("#bodyid", "Symmetry Table", "SymTable", 150, -200, "btn-lg", toSymTable);
+		addButton("#bodyid", "Playground", "Playground", 700, 600, "btn-lg",toPlayground);
+		addButton("#bodyid", "Triangle Symmetry", "SymTri", 1000, 250, "btn-lg",toSymTri);
+		addButton("#bodyid", "Symmetry Table", "SymTable", 200, 250, "btn-lg", toSymTable);
 		
 		
 	</script>

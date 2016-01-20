@@ -39,8 +39,9 @@ function addButton(idName, title, buttonid, xPosition, yPosition, size, callback
     "use strict";
     $(idName).append('<button class="btn btn-test ' + size + '"type="button" id="' + buttonid + '">' + title + '</button>');
     var checkY = document.getElementById(buttonid).offsetTop, checkX = document.getElementById(buttonid).offsetLeft;
-    document.getElementById(buttonid).style.marginLeft = xPosition - checkX + "px";
-    document.getElementById(buttonid).style.marginTop = yPosition - checkY + "px";
+	    document.getElementById(buttonid).style.position = "absolute";
+    document.getElementById(buttonid).style.left = xPosition - checkX + "px";
+    document.getElementById(buttonid).style.top = yPosition - checkY + "px";
 	document.getElementById(buttonid)
     $('#' + buttonid).on('click', callback);
 }
