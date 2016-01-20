@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset='UTF-8'>
+	<title> JavaScript Tut1 </title>
+	<body>
+		<link rel="stylesheet" href="css/style.css">
+		<script type="text/javascript" src="dist/paper-full.js"></script>
+
+		<script type="text/paperscript" canvas="myCanvas">
+
+
+
+	        function symTri(center, radius) {
+	        	this.myTriangle = new Path();
+	        	this.speed = .5;
+	        	this.center = center;
+	        	this.radius = radius;
+	        	this.timeBound = true;
+
+	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
+	        	{
+					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.x, radius * Math.sin(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.y));
+	        	}
+
+	        	//create text for vertex lettering
+	        	this.textOne = new PointText(this.myTriangle.segments[0].point);
+	        	this.textOne.content = "A";
+		        this.textOne.fillColor = 'blue';
+		        this.textOne.scale(3);
+		        this.textTwo = new PointText(this.myTriangle.segments[1].point);
+		        this.textTwo.content = "B";
+		        this.textTwo.fillColor = 'green';
+		    	this.textTwo.scale(3);
+		        this.textThree = new PointText(this.myTriangle.segments[2].point);
+		        this.textThree.content = "C";
+		        this.textThree.fillColor = 'black';
+		        this.textThree.scale(3);
+				this.letterSpace = 30;
+				
+				this.setLetterPositions = function()
+				{
+					
+					
+					
+					var tmpletterPos = [];
+					
+					//alert (tmpletterPos[0].x);
+					for (i = 0; i < 3; i++)
+					{
+						var distVecx = this.myTriangle.segments[i].point.x - this.center.x;
+						var distVecy = this.myTriangle.segments[i].point.y - this.center.y;
+						var distMag = Math.sqrt(distVecx * distVecx + distVecy * distVecy);
+						var scaleFac = (distMag + this.letterSpace) / (distMag);
+						var nvecx = distVecx * scaleFac;
+						var nvecy = distVecy * scaleFac;
+						
+						tmpletterPos.push(new Point((nvecx + this.center.x), nvecy + this.center.y));	    
+					}
+					this.textOne.point = tmpletterPos[0];
+					
+					this.textTwo.point = tmpletterPos[1];
+				    this.textThree.point = tmpletterPos[2];
+				}	
+
+		        //setting basic parameters for the triangle
+		 		this.myTriangle.closed = true;
+		        this.myTriangle.fillColor = {gradient: {
+            									stops: ['blue', 'red', 'green']
+											 },
+												origin: this.myTriangle.segments[0].point,
+												destination: this.myTriangle.segments[1].point};
+
+				//setting basic parameters used for calculation of flips and rotations
+		        this.lVertex = this.myTriangle.segments[2];
+		        this.rVertex = this.myTriangle.segments[1];
+		        this.botCenter = (this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x) / 2;
+		        this.halfBotLength = this.botCenter - this.myTriangle.segments[2].point.x;
+		        
+		        //general status paramaters
+		        this.isRotate = false;
+		        this.isFlip = false;
+	        	this.currentFrame = 0;
+
+	       		this.currentABC = "ABC";
+	       		this.symmetry = {string: "RRFRFRR", current: 0};
+
+	       		//sets the symmetry string based on input
+	       		this.setSym = function(sym, resetCurrent) {
+	       			if(!resetCurrent) {
+	       				this.symmetry.string = sym;
+	       			} else {
+	       				this.symmetry = { string: sym, current: 0};
+	       			}
+	       			
+	       		};
+
+	       		//sets the next symmetry to rotation of flip by manipulating general status params
+		    	this.setState = function() {
+		    		var c = this.symmetry.current;
+		    		//alert(this.symmetry.string);
+		    		if(c < this.symmetry.string.length) {			//make sure we havn't reached the end of the symm string
+		    			var ch = this.symmetry.string.charAt(c);	//find the char at the current spot
+		    			this.symmetry.current++;	
+			    		if(ch === 'R') {			//rotation case
+			    			this.isFlip = false;
+			    			this.isRotate = true;
+			    		} else if (ch === 'F') {	//flip case
+			    			this.isRotate = false;
+			    			this.isFlip = true;
+			    		}
+		    		}
+		    		
+		    	};
+	        	//1 is b 2 is c 0 is a
+
+	        	this.currentPoints = [1,2];
+	        	//calculated the indexing for various points based on the rotation
+				
+				
+				
+				
+	        	this.findPointsToFlip = function() {
+	        		var map = {};
+	        		map['A'] = 0;
+	        		map['B'] = 1;
+	        		map['C'] = 2;
+
+	        		//this is copypasta from before just with the new currentABC defining the points
+	        		this.currentPoints = [map[this.currentABC.charAt(1)], map[this.currentABC.charAt(2)]];
+	        		this.lVertex = this.myTriangle.segments[this.currentPoints[0]];
+		        	this.rVertex = this.myTriangle.segments[this.currentPoints[1]];
+		       		this.botCenter = (this.myTriangle.segments[this.currentPoints[0]].point.x + this.myTriangle.segments[this.currentPoints[1]].point.x) / 2;
+		        	this.halfBotLength = this.botCenter - this.myTriangle.segments[this.currentPoints[0]].point.x;
+	        	};
+
+				
+				
+				
+				
+	        	//non time-bound flip and rotate functions
+	        	this.rotate = function() {
+	        		
+	        		this.myTriangle.rotate(120, this.center);
+	        		this.isRotate = false;
+				    
+				    this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			
+				    this.findPointsToFlip();
+	        	}
+	        	this.flip = function() {
+					
+					this.findPointsToFlip();
+					
+	        		var tmp = this.lVertex;
+                    this.myTriangle.segments[this.currentPoints[0]] = this.rVertex;
+                    this.myTriangle.segments[this.currentPoints[1]] = tmp;
+	        		this.isFlip = false;
+					           	
+					this.currentFrame = 0;
+
+					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+	        	}
+
+	        	this.Update = function(event) {
+	        		if(this.timeBound) {	//check if the triangle should be animated or not
+		        		if(this.isFlip) {	//if the next action is a flip
+			        		
+				       	    var increment = Math.PI/(60*this.speed); 
+				         	           
+			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
+						            
+					        this.lVertex.point.x = pointVal * this.halfBotLength + this.botCenter;
+					        this.rVertex.point.x = pointVal * -this.halfBotLength + this.botCenter;
+
+				            this.currentFrame++;
+				            if(this.currentFrame > 60*this.speed) {
+					           	this.isFlip = false;
+					           	
+					           	this.currentFrame = 0;
+					           	this.setState();
+					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+					           	
+					           	this.findPointsToFlip();
+						    }
+			                       
+				    	} else if (this.isRotate) { //if the action is a rotation
+				    		this.myTriangle.rotate(2/this.speed, this.center);
+
+				    		this.currentFrame++;
+				    		if(this.currentFrame >= 60*this.speed) {
+				    			this.isRotate = false;
+				    			this.currentFrame = 0;
+				    			this.setState();
+				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			
+				    			this.findPointsToFlip();
+				    		}
+				    	} else {
+				    		this.setState();
+				    	}
+				    } else {	//non time-bound manipulation
+				    	var lastABC = "";
+				    	while(lastABC != this.currentABC)
+				    	{
+				    		lastABC = this.currentABC;
+				    		if(this.isFlip) {
+					    		this.flip();
+					    	} else if (this.isRotate) {
+					    		this.rotate();
+					    	}
+				    	}
+				    	this.setState();
+
+				    }
+
+				    //updating position of text for vertex lettering
+				    this.setLetterPositions();
+
+				    //resetting triangle colors to persist over transformations
+				    this.myTriangle.fillColor = {gradient: {
+            									stops: ['blue', 'red', 'green']
+											 },
+												origin: this.myTriangle.segments[0].point,
+												destination: this.myTriangle.segments[1].point};
+				    
+		    	};
+		    }
+
+		    function pText(point, icont, color, scale) { //constructor function for text located on a point
+		    	var text = new PointText(point);
+		    	text.content = icont;
+		    	text.fillColor = color;
+		    	text.scale(scale);
+		    	return text;
+		    }
+		    
+		    function sButton(point, size, color, text, func) { //class constructor for a clickable button
+		    	var rectangle = new Rectangle(point, size);
+		    	this.button = new Path.Rectangle(rectangle);
+		    	this.button.fillColor = color;
+		    	var offset = new Point(-50, -100);
+		    	this.text = new pText(point-offset, text, color, 4);
+		    	
+		    	var dothis = func;
+		    	this.button.onClick = function(event) {
+		    		dothis(event);
+		    	}
+		    }
+
+	      	var myTri = new symTri(new Point(500, 400), 250);	//creates triangle on (500,400) with radius 250
+	      	
+	      	myTri.setSym("", true);	//sets symmetry to empty	
+	      	myTri.setState();		//sets initial state
+	      	
+	      	var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
+	      	myTri2.setSym("FRFRFRRFFRRFF", true);			//starts flipped
+	      	myTri2.timeBound = false;	//set to not be time-bound default=true
+	      	myTri2.setState();			//sets initial state
+
+	      	
+	      	var but1 = new sButton(new Point(325, 800), new Size(150, 50), 'black', 'R', but1f); //create new rotate button
+	      	var but2 = new sButton(new Point(525, 800), new Size(150, 50), 'green', 'F', but2f); //create new flip button
+
+	      	function but1f(event) {	//function for rotation button press
+	      		myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
+	      		//alert(myTri.symmetry.string);
+	      	}
+
+	      	function but2f(event) {	//function for flip button press
+	      		myTri.setSym(myTri.symmetry.string + "F", false);	//appends "F" to the symmetry string
+	      		//alert(myTri.symmetry.string);
+	      	}
+	      	
+			var symText = new PointText(new Point(100, 100));	//text to display current symmstring
+			symText.fillColor = 'red';
+			symText.scale(6);
+
+			var fpsText = new PointText(new Point(1400, 50));	
+			fpsText.fillColor = 'red';
+			fpsText.content = '';
+			fpsText.scale(5);
+
+			var lastLoop = new Date;	//fps calculation time 
+
+	      	function onFrame(event) {
+	      		//fps calculations
+	      		var thisLoop = new Date;
+	      		var fps = 1000/(thisLoop-lastLoop);
+	      		lastLoop = thisLoop;
+
+	      		//updates fpsstring
+	      		fpsText.content = fps;
+
+	      		//sets symmtext to be both the current and desired symmetry
+	      		symText.content = myTri.symmetry.string + "\n" + myTri.symmetry.string.substring(0, myTri.symmetry.current); 
+
+	      		//updates the time-bound triangle
+	      		myTri.Update(event);
+	      		myTri2.Update(event);
+	      		
+	      	}
+    
+		</script>
+</head>
+	<body>
+		<canvas id="myCanvas" resize></canvas>
+	</body>
+</html>
