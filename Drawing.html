@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset='UTF-8'>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Drawing Test</title>
+	<body id="bodyid">
+		<link rel="stylesheet" src="css/main.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="dist/paper-full.js"></script>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<link href="main.css" rel="stylesheet">
+		<script src="js/GUI.js"></script> <!---include gui -->
+
+		<script type="text/paperscript" canvas="myCanvas">
+
+			var width = $(document).width();
+			var height = $(document).height();
+
+			view.viewSize = (width, height);
+			var tool = new Tool();
+			tool.minDistance = 10;
+
+			var path;
+
+		    tool.onMouseDown = function(event) {
+				// Create a new path and give it a stroke color:
+				path = new Path();
+				path.strokeColor = '#00000';
+
+				// Add a segment to the path where
+				// you clicked:
+				path.add(event.point);
+			}
+
+			tool.onMouseDrag = function(event) {
+				// Every drag event, add a segment
+				// to the path at the position of the mouse:
+				path.add(event.point);
+			}
+
+		</script>
+		
+</head>
+	<body>
+		<canvas id="myCanvas" style="z-indez:1" resize></canvas>
+	</body>
+</html>
