@@ -20,9 +20,11 @@
 
 			view.viewSize = (width, height);
 			var tool = new Tool();
-			tool.minDistance = 10;
+			//tool.minDistance = 10;
 
 			var path;
+			var tempPaths = [];
+			var Paths = [];
 
 		    tool.onMouseDown = function(event) {
 				// Create a new path and give it a stroke color:
@@ -32,15 +34,47 @@
 				// Add a segment to the path where
 				// you clicked:
 				path.add(event.point);
+
+				//path.position = new Point(500, 500);
+
 			}
 
 			tool.onMouseDrag = function(event) {
 				// Every drag event, add a segment
 				// to the path at the position of the mouse:
 				path.add(event.point);
+
+				//path.position = new Point(500, 500);
+
 			}
 
-		</script>
+			tool.onMouseUp = function(event){
+				tempPaths.push(path);
+			}
+
+			function addPath() {
+				for(i = 0; i < tempPaths.length; i++){
+					tempPaths[i].visible = false;
+				}
+				
+				path.visible = false;
+				Paths.push(path);
+
+				for(i = 0; i < tempPaths.length; i++){
+					tempPaths[i].translate(new Point(300, 300));
+					tempPaths[i].visible = true;
+				}
+
+				tempPaths = [];
+			}
+
+		function toPlayground() {
+			window.location.href = "Playground.html"
+		}
+
+		addButton("#bodyid", "Clear", "Path", 1000, 800, "btn-lg", addPath);
+
+	</script>
 		
 </head>
 	<body>
