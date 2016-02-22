@@ -17,6 +17,9 @@
 
 	        function symTri(center, radius) {
 	        	this.myTriangle = new Path();
+	        	this.topQuad = new Path();
+	        	this.leftQuad = new Path();
+	        	this.rightQuad = new Path();
 	        	this.speed = .5;
 	        	this.center = center;
 	        	this.radius = radius;
@@ -26,6 +29,31 @@
 	        	{
 					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.x, radius * Math.sin(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.y));
 	        	}
+
+	        			//creating vertices for quadrilaterals inside the triangle
+	        	
+	        	this.topQuad.add(new Point(this.myTriangle.segments[0].point));
+	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.topQuad.add(new Point(center.x, center.y));
+	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[2].point.y)/2));
+	        	this.topQuad.fillColor = new Color(.066, .332, .797);
+	        	this.topQuad.closed = true;
+
+	        	this.leftQuad.add(new Point(this.myTriangle.segments[1].point));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
+	        	this.leftQuad.add(new Point(center.x, center.y));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.leftQuad.fillColor = new Color(.666, .332, .797);
+	        	this.leftQuad.closed = true;
+
+	        	this.rightQuad.add(new Point(this.myTriangle.segments[2].point));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.rightQuad.add(new Point(center.x, center.y));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
+	        	this.rightQuad.closed = true;
+
+
 
 	        	//create text for vertex lettering
 	        	this.textOne = new PointText(this.myTriangle.segments[0].point);
@@ -77,8 +105,8 @@
 				}	
 
 		        //setting basic parameters for the triangle
-		 		this.myTriangle.closed = true;
-		        this.myTriangle.fillColor = new Color(.066, .332, .797);
+		 		//this.myTriangle.closed = true;
+		      //  this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 				//setting basic parameters used for calculation of flips and rotations
 		        this.lVertex = this.myTriangle.segments[2];
@@ -142,7 +170,7 @@
 		       		this.botCenter = (this.myTriangle.segments[this.currentPoints[0]].point.x + this.myTriangle.segments[this.currentPoints[1]].point.x) / 2;
 		        	this.halfBotLength = this.botCenter - this.myTriangle.segments[this.currentPoints[0]].point.x;
 	        	};
-
+   
 				
 				
 				
@@ -186,7 +214,7 @@
 				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
 					           	
-					           	this.currentFrame = 0;
+					           	this.currentFrame = 0; 
 					           	this.setState();
 					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 					           	
@@ -195,8 +223,11 @@
 			                       
 				    	} else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, this.center);
-
+				    		this.topQuad.rotate(2/this.speed, this.center);
+				    		this.leftQuad.rotate(2/this.speed, this.center);
+				    		this.rightQuad.rotate(2/this.speed, this.center);
 				    		this.currentFrame++;
+
 				    		if(this.currentFrame >= 60*this.speed) {
 				    			this.isRotate = false;
 				    			this.currentFrame = 0;
@@ -227,7 +258,7 @@
 				    this.setLetterPositions();
 
 				    //resetting triangle colors to persist over transformations
-				    this.myTriangle.fillColor = new Color(.066, .332, .797);
+				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 				    
 		    	};
 		    }
