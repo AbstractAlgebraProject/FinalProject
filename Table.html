@@ -80,10 +80,10 @@
 					return Resultant;
 				}
 				
-				var rIdentity = Identity();
-				var flip = "F";
-				var rInverse = rIdentity.substring(0, rIdentity.length - 1);
-				var Symmetries = ["1", "F", "R"];						//begins with 1, F and R
+				this.rIdentity = Identity();
+				this.flip = "F";
+				this.rInverse = rIdentity.substring(0, rIdentity.length - 1);
+				this.Symmetries = ["1", "F", "R"];						//begins with 1, F and R
 				var Resultant;											//constructs all other symmetries by performing every combination
 
 				for(i = 0; i < 2*n - 1; i++){
@@ -188,6 +188,7 @@
 					for(i = 0; i < tileNum-1; i++){
 						for(k = 0; k < tileNum-1; k++){
 							if((document.getElementById('text' + (i+1) + (k+1)).value).toUpperCase() === Simplify(Symmetries[i] + Symmetries[k])){
+								document.getElementById('text' + (i+1) + (k+1)).value = document.getElementById('text' + (i+1) + (k+1)).value.toUpperCase();
 								document.getElementById('text' + (i+1) + (k+1)).style.backgroundColor = "#6a7f10";
 							}
 							else if(document.getElementById('text' + (i+1) + (k+1)).value === ""){
@@ -216,6 +217,7 @@
 		
 		addButton("#bodyid", "Playground", "Playground", 1000, 1400, "btn-lg",toPlayground);
 		addButton("#bodyid", "Menu", "Menu", 1000, 1200, "btn-lg",toMenu);
+		
 	</script>
 		
 </head>

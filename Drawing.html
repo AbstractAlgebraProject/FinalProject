@@ -15,16 +15,24 @@
 
 		<script type="text/paperscript" canvas="myCanvas">
 
-			var width = $(document).width();
-			var height = $(document).height();
+			var c = document.getElementById("myCanvas");
+			var context = c.getContext("2d");
+			var width = $(document).width() - 20;
+			var height = $(document).height() - 20;
 
-			view.viewSize = (width, height);
+			view.viewSize.width = width;
+			view.viewSize.height = height;// = new Size(width, height);
+			//view.center = new Point(width, height);
+			//view.bounds = new Rectangle(width/4, height/4, width/2, height/2);
+			c.style.margin = height/4 + "px";
+			
 			var tool = new Tool();
 			//tool.minDistance = 10;
 
+			var symbolMap = {};
 			var path;
 			var tempPaths = [];
-			var Paths = [];
+			var compoundPath = new Group();
 
 		    tool.onMouseDown = function(event) {
 				// Create a new path and give it a stroke color:
@@ -36,7 +44,6 @@
 				path.add(event.point);
 
 				//path.position = new Point(500, 500);
-
 			}
 
 			tool.onMouseDrag = function(event) {
@@ -57,22 +64,67 @@
 					tempPaths[i].visible = false;
 				}
 				
-				path.visible = false;
-				Paths.push(path);
+				//path.visible = false;
 
 				for(i = 0; i < tempPaths.length; i++){
-					tempPaths[i].translate(new Point(300, 300));
-					tempPaths[i].visible = true;
+					compoundPath.addChild(tempPaths[i]);
+					//tempPaths[i].translate(new Point(300, 300));
+					//tempPaths[i].visible = true;
 				}
 
-				tempPaths = [];
+				
+				
 			}
 
+			function set1(){
+				addPath();
+				symbolMap["1"] = jQuery.extend(true, {}, compoundPath);
+				symbolMap["1"].position += new Point(300, 300);
+				for(i = 0; i < tempPaths.length; i++){
+					tempPaths[i].visible = true;
+				}
+				symbolMap["1"].visible = true;
+				compoundPath.removeChildren();
+				tempPaths = [];
+			}
+			function setF(){
+				addPath();
+				symbolMap["1"] = compoundPath;
+				compoundPath = []; 
+			}
+			function setR(){
+				addPath();
+				symbolMap["1"] = compoundPath;
+				compoundPath = []; 
+			}
+			function setFR(){
+				addPath();
+				symbolMap["1"] = compoundPath;
+				compoundPath = []; 
+			}
+			function setFRR(){
+				addPath();
+				symbolMap["1"] = compoundPath;
+				compoundPath = []; 
+			}
+			function setRR(){
+				addPath();
+				symbolMap["1"] = compoundPath;
+				compoundPath = []; 
+			}
+
+			
 		function toPlayground() {
 			window.location.href = "Playground.html"
 		}
 
-		addButton("#bodyid", "Clear", "Path", 1000, 800, "btn-lg", addPath);
+		//addButton("#bodyid", "Clear", "Path", 0, 1407, "btn-lg", addPath);
+		addButton('#bodyid', "1", "1", 0, 1607, "btn-lg", set1);
+		addButton('#bodyid', "F", "F", 0, 1807, "btn-lg", setF);
+		addButton('#bodyid', "R", "R", 0, 2007, "btn-lg", setR);
+		addButton('#bodyid', "FR", "FR", 0, 2207, "btn-lg", setFR);
+		addButton('#bodyid', "FRR", "FRR", 0, 2407, "btn-lg", setFRR);
+		addButton('#bodyid', "RR", "RR", 0, 2607, "btn-lg", setRR);
 
 	</script>
 		
