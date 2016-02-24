@@ -24,7 +24,7 @@
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
-					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.y));
+					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
 	        	}
 
 	        	//create text for vertex lettering
@@ -170,7 +170,21 @@
 
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 	        	}
+				
+				
+				this.reset = function() {
+					this.setSym("", true);
+					this.currentABC = "ABC";
+				
+					for (i = 0; i < 3; i++) 	//reset vertices for equilateral triangle
+					{
+					this.myTriangle.segments[i].point = (new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
+					}
+					this.findPointsToFlip();
+	        	}
 
+				
+				
 	        	this.Update = function(event) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
@@ -283,7 +297,7 @@
 			
 			function resetTri()
 			{
-				myTri.setSym("", true);
+				myTri.reset();
 			}
 			
 			/*
