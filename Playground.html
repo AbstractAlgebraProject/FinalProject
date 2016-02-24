@@ -115,7 +115,7 @@
 		        this.lVertex = this.myTriangle.segments[2];
 		        this.rVertex = this.myTriangle.segments[1];
 		        this.botCenter = (this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x) / 2;
-		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[1].point.x);
+		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[2].point.x);
 		        
 		        //general status paramaters
 		        this.isRotate = false;
@@ -171,7 +171,7 @@
 	        		this.lVertex = this.myTriangle.segments[this.currentPoints[0]];
 		        	this.rVertex = this.myTriangle.segments[this.currentPoints[1]];
 		       		this.botCenter = (this.myTriangle.segments[this.currentPoints[0]].point.x + this.myTriangle.segments[this.currentPoints[1]].point.x) / 2;
-		        	this.halfBotLength = (this.botCenter - this.myTriangle.segments[this.currentPoints[0]].point.x);
+		        	this.halfBotLength = (this.botCenter - this.myTriangle.segments[this.currentPoints[1]].point.x);
 					
 	        	};
    
@@ -242,7 +242,7 @@
 					           	this.currentFrame = 0; 
 					           	this.setState();
 					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
-					           	//this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
+					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
 								//alert(this.quadFlipCorner);
 								/*
 								if(this.quadFlipCorner[0] === 1){
@@ -271,6 +271,7 @@
 				    			this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 				    			
 				    			this.findPointsToFlip();
+
 				    		}
 				    	} else {
 				    		this.setState();
