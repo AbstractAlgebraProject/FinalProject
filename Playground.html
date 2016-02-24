@@ -20,6 +20,7 @@
 	        	this.topQuad = new Path();
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
+	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
 	        	this.speed = .5;
 	        	this.center = center;
 	        	this.radius = radius;
@@ -210,6 +211,11 @@
 					        this.lVertex.point.x = pointVal * this.halfBotLength + this.botCenter;
 					        this.rVertex.point.x = pointVal * -this.halfBotLength + this.botCenter;
 
+					        this.Quads[0].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
+					        this.Quads[0].segments[1].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[1].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
+					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+
 				            this.currentFrame++;
 				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
@@ -217,7 +223,7 @@
 					           	this.currentFrame = 0; 
 					           	this.setState();
 					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
-					           	
+					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
 					           	this.findPointsToFlip();
 						    }
 			                       
@@ -233,6 +239,7 @@
 				    			this.currentFrame = 0;
 				    			this.setState();
 				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 				    			
 				    			this.findPointsToFlip();
 				    		}
@@ -368,9 +375,9 @@
 				window.location.href = "Index.html";
 			}
 		
-			addButton("#bodyid", "Flip", "Flip", 350, 1700, "btn-md",but2f);
-			addButton("#bodyid", "Rotate", "Rotate", 550, 1700, "btn-md",but1f);
-			addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",butCheckSet);
+			addButton("#bodyid", "Flip", "Flip", 350, 2000, "btn-md",but2f);
+			addButton("#bodyid", "Rotate", "Rotate", 550, 2000, "btn-md",but1f);
+			addButton("#bodyid", "Check", "Check", 1000, 2000, "btn-md",butCheckSet);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1600, "btn-lg", toMenu);
 		</script>
 </head>
