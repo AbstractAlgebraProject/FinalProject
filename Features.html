@@ -24,7 +24,7 @@
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
-					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (i * Math.PI * 2 / 3)) + center.y));
+					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
 	        	}
 
 	        	//create text for vertex lettering
@@ -170,6 +170,7 @@
 
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 	        	}
+				
 
 	        	this.Update = function(event) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
@@ -283,7 +284,7 @@
 			
 			function resetTri()
 			{
-				myTri.setSym("", true);
+				myTri.setSym("", false);
 			}
 			
 			/*
@@ -306,6 +307,9 @@
 				return strings[randomnumber];
 			}
 	      	
+			function lock_and_name()
+			{
+			}
 			/*var symText = new PointText(new Point(100, 100));	//text to display current symmstring
 			symText.fillColor = 'red';
 			symText.scale(6);*/
@@ -315,10 +319,12 @@
 			fpsText.content = '';
 			fpsText.scale(5);*/
 			
+			/*
 			var numCorrectTxt = new PointText(new Point(1200, 50));
 			numCorrectTxt.fillColor = new Color(.453, .105, .277);
 			numCorrectTxt.content = "Correct: 0";
 			numCorrectTxt.scale(5);
+			*/
 			
 			var numCorrect = 0;
 
@@ -348,9 +354,10 @@
 		
 			addButton("#bodyid", "Flip", "Flip", 50, 1200, "btn-md",but2f);
 			addButton("#bodyid", "Rotate", "Rotate", 50, 1400, "btn-md",but1f);
-			addButton("#bodyid", "Reset", "Reset", 50, 1700, "btn-md", resetTri);
+			addButton("#bodyid", "Reset", "Reset", 50, 1800, "btn-md", resetTri);
 			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
-			addButton("#bodyid", "Menu", "Menu", 1600, 1600, "btn-lg", toMenu);
+			addButton("#bodyid", "Next", "Next", 500, 1800, "btn-md", toMenu);
+			addButton("#bodyid", "Lock and Name", "Lock and Name", 1000, 1200, "btn-md", lock_and_name)
 			//alert("here");
 			
 		</script>
