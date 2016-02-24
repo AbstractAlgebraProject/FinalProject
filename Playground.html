@@ -21,6 +21,7 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+	        	
 	        	this.speed = .5;
 	        	this.center = center;
 	        	this.radius = radius;
@@ -48,9 +49,9 @@
 	        	this.leftQuad.closed = true;
 
 	        	this.rightQuad.add(new Point(this.myTriangle.segments[2].point));
-	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
-	        	this.rightQuad.add(new Point(center.x, center.y));
 	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.rightQuad.add(new Point(center.x, center.y));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
 	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
 	        	this.rightQuad.closed = true;
 
@@ -212,10 +213,15 @@
 					        this.rVertex.point.x = pointVal * -this.halfBotLength + this.botCenter;
 
 					        this.Quads[0].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[1].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-					        this.Quads[1].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[0].segments[3].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 
+					        this.Quads[1].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
+					        this.Quads[1].segments[3].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+
+					        this.Quads[2].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[2].segments[3].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+
+ 							
 				            this.currentFrame++;
 				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
