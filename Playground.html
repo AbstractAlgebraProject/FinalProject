@@ -97,13 +97,13 @@
 						
 						tmpletterPos.push(new Point((nvecx + this.center.x), nvecy + this.center.y));	    
 					}
-					this.textOne.point = tmpletterPos[0];
+					this.textOne.point = new Point(this.myTriangle.segments[0].point.x, this.myTriangle.segments[0].point.y + 10);
 					//this.textOne.point = new Point(this.textOne.point.x - this.textOne.bound.width / 2, this.textOne.point.y + this.textOne.bound.height / 2);
 					
-					this.textTwo.point = tmpletterPos[1];
+					this.textTwo.point = new Point(this.myTriangle.segments[1].point.x - 10, this.myTriangle.segments[1].point.y - 10);
 					//this.textTwo.point = new Point(this.textTwo.point.x - this.textTwo.bound.width / 2, this.textTwo.point.y + this.textTwo.bound.height / 2);
 					
-				    this.textThree.point = tmpletterPos[2];
+				    this.textThree.point = new Point(this.myTriangle.segments[2].point.x + 10, this.myTriangle.segments[2].point.y - 10);
 					//this.textThree.point = new Point(this.textThree.point.x - this.textThree.bound.width / 2, this.textThree.point.y + this.textThree.bound.height / 2);
 				}	
 
@@ -170,8 +170,8 @@
 	        		this.currentPoints = [map[this.currentABC.charAt(1)], map[this.currentABC.charAt(2)]];
 	        		this.lVertex = this.myTriangle.segments[this.currentPoints[1]];
 		        	this.rVertex = this.myTriangle.segments[this.currentPoints[0]];
-		       		this.botCenter = (this.myTriangle.segments[this.currentPoints[0]].point.x + this.myTriangle.segments[this.currentPoints[1]].point.x) / 2;
-		        	this.halfBotLength = (this.botCenter - this.myTriangle.segments[this.currentPoints[1]].point.x);
+		       		this.botCenter = (this.Quads[0].segments[0].point.x + this.Quads[1].segments[0].point.x) / 2;
+		        	this.halfBotLength = (this.botCenter - this.Quads[1].segments[0].point.x);
 					
 	        	};
    
@@ -220,23 +220,24 @@
 					        this.lVertex.point.x = pointVal * this.halfBotLength + this.botCenter;
 					        this.rVertex.point.x = pointVal * -this.halfBotLength + this.botCenter;
 							
-							//alert (this.halfBotLength);
+							
+							alert (this.halfBotLength);
 							
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
 					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 							
-							alert(this.Quads[0].segments[0].point.x);
+							//alert(this.Quads[0].segments[0].point.x);
 
 					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
 					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 
 
  							
 				            this.currentFrame++;
-				            if(this.currentFrame >= 60*this.speed) {
+				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
 					           	
 					           	this.currentFrame = 0; 
@@ -252,8 +253,10 @@
 								else{
 									this.quadFlipCorner = [1,3,1,3];
 								}
+								console.log(this.botCenter);
+								console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
 							
-								
+								//alert(this.halfBotLength);
 								//alert(this.quadFlipCorner);
 					           	this.findPointsToFlip();
 						    }
@@ -262,9 +265,14 @@
 				    	} 
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, this.center);
-				    		this.topQuad.rotate(2/this.speed, this.center);
-				    		this.leftQuad.rotate(2/this.speed, this.center);
-				    		this.rightQuad.rotate(2/this.speed, this.center);
+							for (i = 0; i < 3; i++)
+							{
+								for (k = 0; k < 4; k++)
+								{
+									this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, this.center, (-Math.PI) / (90 * this.speed) );
+									//alert ( (-Math.PI) / (90 * this.speed) );
+								}
+							}
 				    		this.currentFrame++;
 
 				    		if(this.currentFrame >= 60*this.speed) {
@@ -274,18 +282,9 @@
 				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
 				    			this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
 				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
-				    			if(this.symmetry.string.includes("F")){
-				    				if(please === 0){
-				    					this.quadFlipCorner = [3,3,1,3];
-				    					please = 1;
-				    				}
-				    				else{
-				    					this.quadFlipCorner = [1,1,3,1];
-				    					please = 0;
-				    				}
-				    				
-				    			}
-				    			
+								
+								console.log(this.botCenter);
+				    			console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
 				    			this.findPointsToFlip();
 
 				    		}
@@ -317,9 +316,56 @@
 				    //resetting triangle colors to persist over transformations
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 				    
-		    	};
+		    	}
+				
+				
+				this.moveTri = function(npoint)
+				{
+					this.myTriangle.position += npoint;
+					for (i = 0 ; i < 3; i ++)
+					{
+						this.Quads[i].position += npoint;
+					}
+					this.center += npoint;
+				}
+				
+				this.resizeTri = function(scalefac)
+				{
+					this.textOne.scale(scalefac);
+					this.textTwo.scale(scalefac);
+					this.textThree.scale(scalefac);
+					
+					this.myTriangle.scale(scalefac);
+					for (i = 0 ; i < 3; i ++)
+					{
+						for (k = 0; k < 4; k++)
+						{
+							var zeroPoint = this.Quads[i].segments[k].point - this.center;
+							zeroPoint.x *= scalefac;
+							zeroPoint.y *= scalefac;
+							this.Quads[i].segments[k].point = zeroPoint + this.center;
+						}
+					}
+					this.findPointsToFlip();
+				}
 		    }
-
+			
+			
+			
+			
+			function rotatePoints(pointa, pointb, ang)
+			{
+				var npoint = new Point(pointa.x - pointb.x, pointa.y - pointb.y);
+				
+				var rotpoint = new Point(npoint.x * Math.cos(ang) + npoint.y * Math.sin(ang), -npoint.x * Math.sin(ang) + npoint.y * Math.cos(ang));
+				
+				var retpoint = new Point(rotpoint.x + pointb.x, rotpoint.y + pointb.y);
+				//alert(ang);
+				//alert(Math.cos(ang));
+				return retpoint;
+			}
+			
+			
 		    function pText(point, icont, color, scale) { //constructor function for text located on a point
 		    	var text = new PointText(point);
 		    	text.content = icont;
@@ -352,7 +398,13 @@
 	      	myTri2.timeBound = false;	//set to not be time-bound default=true
 	      	myTri2.setState();			//sets initial state
 
+
+
+			myTri.moveTri(new Point(100,100));
+			myTri.resizeTri(.1);
 	      	
+			
+			
 	      	//var but1 = new sButton(new Point(325, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'R', but1f); //create new rotate button
 	      	//var but2 = new sButton(new Point(525, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'F', but2f); //create new flip button
 			//var butCheck = new sButton(new Point(725, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'Check', butCheckSet); //create new flip button
@@ -425,9 +477,9 @@
 				window.location.href = "Index.html";
 			}
 		
-			addButton("#bodyid", "Flip", "Flip", 350, 2000, "btn-md",but2f);
-			addButton("#bodyid", "Rotate", "Rotate", 550, 2000, "btn-md",but1f);
-			addButton("#bodyid", "Check", "Check", 1000, 2000, "btn-md",butCheckSet);
+			addButton("#bodyid", "Flip", "Flip", 350, 1700, "btn-md",but2f);
+			addButton("#bodyid", "Rotate", "Rotate", 550, 1700, "btn-md",but1f);
+			addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",butCheckSet);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 		</script>
 </head>
