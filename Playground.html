@@ -115,7 +115,7 @@
 		        this.lVertex = this.myTriangle.segments[2];
 		        this.rVertex = this.myTriangle.segments[1];
 		        this.botCenter = (this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x) / 2;
-		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[1].point.x);
+		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[2].point.x);
 		        
 		        //general status paramaters
 		        this.isRotate = false;
@@ -171,7 +171,7 @@
 	        		this.lVertex = this.myTriangle.segments[this.currentPoints[0]];
 		        	this.rVertex = this.myTriangle.segments[this.currentPoints[1]];
 		       		this.botCenter = (this.myTriangle.segments[this.currentPoints[0]].point.x + this.myTriangle.segments[this.currentPoints[1]].point.x) / 2;
-		        	this.halfBotLength = (this.botCenter - this.myTriangle.segments[this.currentPoints[0]].point.x);
+		        	this.halfBotLength = (this.botCenter - this.myTriangle.segments[this.currentPoints[1]].point.x);
 					
 	        	};
    
