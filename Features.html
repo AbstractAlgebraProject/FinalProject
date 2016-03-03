@@ -30,7 +30,7 @@
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
-					this.myTriangle.add(new Point(-radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, -radius * Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
+					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, -radius * Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
 	        	}
 
 	        			//creating vertices for quadrilaterals inside the triangle
@@ -42,19 +42,19 @@
 	        	this.topQuad.fillColor = new Color(.066, .332, .797);
 	        	this.topQuad.closed = true;
 
-	        	this.leftQuad.add(new Point(this.myTriangle.segments[1].point));
-	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
-	        	this.leftQuad.add(new Point(center.x, center.y));
-	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2));
-	        	this.leftQuad.fillColor = new Color(.666, .332, .797);
-	        	this.leftQuad.closed = true;
-
-	        	this.rightQuad.add(new Point(this.myTriangle.segments[2].point));
-	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.rightQuad.add(new Point(this.myTriangle.segments[1].point));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
 	        	this.rightQuad.add(new Point(center.x, center.y));
-	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
-	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.rightQuad.fillColor = new Color(.666, .332, .797);
 	        	this.rightQuad.closed = true;
+
+	        	this.leftQuad.add(new Point(this.myTriangle.segments[2].point));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.leftQuad.add(new Point(center.x, center.y));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.leftQuad.fillColor = new Color(.066, .632, .797);
+	        	this.leftQuad.closed = true;
 
 
 
@@ -134,7 +134,7 @@
 		        this.lVertex = this.myTriangle.segments[2];
 		        this.rVertex = this.myTriangle.segments[1];
 		        this.botCenter = (this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x) / 2;
-		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[2].point.x);
+		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[1].point.x);
 		        
 		        //general status paramaters
 		        this.isRotate = false;
@@ -243,15 +243,23 @@
 							//alert (this.halfBotLength);
 							
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 							
 							//alert(this.Quads[0].segments[0].point.x);
 
 					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[1].segments[this.quadFlipCorner[0]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 
 					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+							
+							console.log(this.Quads[0].segments[0].point);
+							console.log(this.Quads[0].segments[1].point);
+							console.log(this.Quads[0].segments[2].point);
+							console.log(this.Quads[0].segments[3].point);
+							console.log(this.quadFlipCorner);
+							console.log(this.halfBotLength);
+							console.log(this.currentFrame);
 
 
  							
@@ -338,6 +346,7 @@
 		    	}
 				
 				this.reset = function() {
+
 					this.setSym("", true);
 					this.currentABC = "ABC";
 				
@@ -353,20 +362,21 @@
 						this.topQuad.segments[3].point = (new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[2].point.y)/2));
 						
 						
-						this.leftQuad.segments[0].point = (new Point(this.myTriangle.segments[1].point));
-						this.leftQuad.segments[1].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
-						this.leftQuad.segments[2].point = (new Point(this.center.x, this.center.y));
-						this.leftQuad.segments[3].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2))
-
-						this.rightQuad.segments[0].point = (new Point(this.myTriangle.segments[2].point));
-						this.rightQuad.segments[1].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+						this.rightQuad.segments[0].point = (new Point(this.myTriangle.segments[1].point));
+						this.rightQuad.segments[1].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
 						this.rightQuad.segments[2].point = (new Point(this.center.x, this.center.y));
-						this.rightQuad.segments[3].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
-					*/
+						this.rightQuad.segments[3].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2))
+
+						this.leftQuad.segments[0].point = (new Point(this.myTriangle.segments[2].point));
+						this.leftQuad.segments[1].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+						this.leftQuad.segments[2].point = (new Point(this.center.x, this.center.y));
+						this.leftQuad.segments[3].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
 					
 					
 					
-					this.Quads = [leftQuad, rightQuad, topQuad];
+					
+					this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+					this.quadFlipCorner = [3,1,3,1];
 					this.findPointsToFlip();
 	        	}
 				this.moveTri = function(npoint)
