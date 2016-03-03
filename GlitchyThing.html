@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset='UTF-8'>
+	<title> JavaScript Tut1 </title>
+	<body id="bodyid">
+		<link rel="stylesheet" href="css/style.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<script type="text/javascript" src="dist/paper-full.js"></script>
+		<link href="main.css" rel="stylesheet">
+		<script src="js/GUI.js"></script> <!---include gui -->
+		<script type="text/paperscript" canvas="myCanvas">
+		
+
+
+			function symTri(center, radius) {
+	        	this.myTriangle = new Path();
+	        	this.topQuad = new Path();
+	        	this.leftQuad = new Path();
+	        	this.rightQuad = new Path();
+	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+				this.quadFlipCorner = [3,1,3,1];
+	        	
+	        	this.speed = .5;
+	        	this.center = center;
+	        	this.radius = radius;
+	        	this.timeBound = true;
+
+	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
+	        	{
+					this.myTriangle.add(new Point(-radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, -radius * Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
+	        	}
+
+	        			//creating vertices for quadrilaterals inside the triangle
+	        	
+	        	this.topQuad.add(new Point(this.myTriangle.segments[0].point));
+	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.topQuad.add(new Point(center.x, center.y));
+	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[2].point.y)/2));
+	        	this.topQuad.fillColor = new Color(.066, .332, .797);
+	        	this.topQuad.closed = true;
+
+	        	this.leftQuad.add(new Point(this.myTriangle.segments[1].point));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
+	        	this.leftQuad.add(new Point(center.x, center.y));
+	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.leftQuad.fillColor = new Color(.666, .332, .797);
+	        	this.leftQuad.closed = true;
+
+	        	this.rightQuad.add(new Point(this.myTriangle.segments[2].point));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+	        	this.rightQuad.add(new Point(center.x, center.y));
+	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
+	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
+	        	this.rightQuad.closed = true;
+
+
+
+	        	//create text for vertex lettering
+	        	this.textOne = new PointText(this.myTriangle.segments[0].point);
+	        	this.textOne.content = "A";
+		        this.textOne.fillColor = new Color(.453, .105, .277) ;
+		        this.textOne.scale(3);
+				//this.textOne.point = new Point(this.textOne.point.x - this.textOne.bound.width / 2, this.textOne.point.y + this.textOne.bound.height / 2);
+				
+		        this.textTwo = new PointText(this.myTriangle.segments[1].point);
+		        this.textTwo.content = "B";
+		        this.textTwo.fillColor = new Color(.453, .105, .277);
+		    	this.textTwo.scale(3);
+				//this.textTwo.point = new Point(this.textTwo.point.x - this.textTwo.bound.width / 2, this.textTwo.point.y + this.textTwo.bound.height / 2);
+				
+		        this.textThree = new PointText(this.myTriangle.segments[2].point);
+		        this.textThree.content = "C";
+		        this.textThree.fillColor = new Color(.453, .105, .277);
+		        this.textThree.scale(3);
+				this.letterSpace = 30;
+				//this.textThree.point = new Point(this.textThree.point.x - this.textThree.bound.width / 2, this.textThree.point.y + this.textThree.bound.height / 2);
+				
+				this.setLetterPositions = function()
+				{
+					
+					
+					
+					var tmpletterPos = [];
+					
+					//alert (tmpletterPos[0].x);
+					
+					var tmpQuads = [this.topQuad, this.leftQuad, this.rightQuad];
+					for (i = 0; i < 3; i++)
+					{
+						var distVecx = tmpQuads[i].segments[0].point.x - tmpQuads[i].segments[2].point.x;
+						var distVecy = tmpQuads[i].segments[0].point.y - tmpQuads[i].segments[2].point.y;
+						var distMag = Math.sqrt(distVecx * distVecx + distVecy * distVecy);
+						var scaleFac = (distMag + this.letterSpace) / (distMag);
+						var nvecx = distVecx * scaleFac;
+						var nvecy = distVecy * scaleFac;
+						
+						tmpletterPos.push(new Point((nvecx + tmpQuads[i].segments[2].point.x), nvecy + tmpQuads[i].segments[2].point.y));	    
+					}
+					
+					//this.textOne.point = new Point(this.Quads[0].segments[0].point.x, this.Quads[0].segments[0].point.y)
+					this.textOne.point = new Point(tmpletterPos[0].x, tmpletterPos[0].y);
+					//this.textOne.point = new Point(this.myTriangle.segments[0].point.x, this.myTriangle.segments[0].point.y + 10);
+					//this.textOne.point = new Point(this.textOne.point.x - this.textOne.bound.width / 2, this.textOne.point.y + this.textOne.bound.height / 2);
+					
+					this.textTwo.point = new Point(tmpletterPos[1].x, tmpletterPos[1].y);
+					//this.textTwo.point = new Point(this.textTwo.point.x - this.textTwo.bound.width / 2, this.textTwo.point.y + this.textTwo.bound.height / 2);
+					
+				    this.textThree.point = new Point(tmpletterPos[2].x, tmpletterPos[2].y);
+					//this.textThree.point = new Point(this.textThree.point.x - this.textThree.bound.width / 2, this.textThree.point.y + this.textThree.bound.height / 2);
+					this.centerLetters();
+				}	
+				
+				
+				this.centerLetters = function()
+				{
+					var tmpletters = [this.textOne, this.textTwo, this.textThree];
+
+					for (i = 0; i < 3; i++)
+					{					
+						tmpletters[i].point.x -= tmpletters[i].bounds.width/2;
+						tmpletters[i].point.y += tmpletters[i].bounds.height/4;
+					}
+	
+				}
+
+		        //setting basic parameters for the triangle
+		 		//this.myTriangle.closed = true;
+		      //  this.myTriangle.fillColor = new Color(.066, .332, .797);
+
+				//setting basic parameters used for calculation of flips and rotations
+		        this.lVertex = this.myTriangle.segments[2];
+		        this.rVertex = this.myTriangle.segments[1];
+		        this.botCenter = (this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x) / 2;
+		        this.halfBotLength = (this.botCenter - this.myTriangle.segments[2].point.x);
+		        
+		        //general status paramaters
+		        this.isRotate = false;
+		        this.isFlip = false;
+	        	this.currentFrame = 0;
+
+	       		this.currentABC = "ABC";
+	       		this.symmetry = {string: "RRFRFRR", current: 0};
+
+	       		//sets the symmetry string based on input
+	       		this.setSym = function(sym, resetCurrent) {
+	       			if(!resetCurrent) {
+	       				this.symmetry.string = sym;
+	       			} else {
+	       				this.symmetry = { string: sym, current: 0};
+	       			}
+	       			
+	       		};
+
+	       		//sets the next symmetry to rotation of flip by manipulating general status params
+		    	this.setState = function() {
+		    		var c = this.symmetry.current;
+		    		//alert(this.symmetry.string);
+		    		if(c < this.symmetry.string.length) {			//make sure we havn't reached the end of the symm string
+		    			var ch = this.symmetry.string.charAt(c);	//find the char at the current spot
+		    			this.symmetry.current++;	
+			    		if(ch === 'R') {			//rotation case
+			    			this.isFlip = false;
+			    			this.isRotate = true;
+			    		} else if (ch === 'F') {	//flip case
+			    			this.isRotate = false;
+			    			this.isFlip = true;
+			    		}
+		    		}
+		    		
+		    	};
+	        	//1 is b 2 is c 0 is a
+
+	        	this.currentPoints = [1,2];
+	        	//calculated the indexing for various points based on the rotation
+				
+				
+				
+				
+	        	this.findPointsToFlip = function() {
+	        		var map = {};
+	        		map['A'] = 0;
+	        		map['B'] = 1;
+	        		map['C'] = 2;
+
+	        		//this is copypasta from before just with the new currentABC defining the points
+	        		this.currentPoints = [map[this.currentABC.charAt(1)], map[this.currentABC.charAt(2)]];
+	        		this.lVertex = this.myTriangle.segments[this.currentPoints[1]];
+		        	this.rVertex = this.myTriangle.segments[this.currentPoints[0]];
+		       		this.botCenter = (this.Quads[0].segments[0].point.x + this.Quads[1].segments[0].point.x) / 2;
+		        	this.halfBotLength = (this.botCenter - this.Quads[1].segments[0].point.x);
+					
+	        	};
+   
+				
+				
+				
+				
+	        	//non time-bound flip and rotate functions
+	        	this.rotate = function() {
+	        		
+	        		this.myTriangle.rotate(120, this.center);
+	        		this.isRotate = false;
+				    
+				    this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			
+				    this.findPointsToFlip();
+	        	}
+	        	this.flip = function() {
+					
+					this.findPointsToFlip();
+					
+	        		var tmp = this.lVertex;
+                    this.myTriangle.segments[this.currentPoints[0]] = this.rVertex;
+                    this.myTriangle.segments[this.currentPoints[1]] = tmp;
+	        		this.isFlip = false;
+					           	
+					this.currentFrame = 0;
+
+					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+	        	}
+
+	        	var please = 0;
+	        	this.Update = function(event) {
+	        		if(this.timeBound) {	//check if the triangle should be animated or not
+		        		if(this.isFlip) {	//if the next action is a flip
+			        		
+				       	    var increment = Math.PI/(60*this.speed); 
+				         	           
+			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
+							//alert (pointVal);
+							
+							
+
+							//alert (this.halfBotLength);
+							
+					        this.lVertex.point.x = pointVal * this.halfBotLength + this.botCenter;
+					        this.rVertex.point.x = pointVal * -this.halfBotLength + this.botCenter;
+							
+							
+							//alert (this.halfBotLength);
+							
+							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
+					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+							
+							//alert(this.Quads[0].segments[0].point.x);
+
+					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
+					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+
+					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+
+
+ 							
+				            this.currentFrame++;
+				            if(this.currentFrame > 60*this.speed) {
+					           	this.isFlip = false;
+					           	
+					           	this.currentFrame = 0; 
+					           	this.setState();
+					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+
+					           	//this.Quads.splice(1, 0, this.Quads.splice(0, 1)[0]);
+					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
+								//alert(this.quadFlipCorner);
+								if(this.quadFlipCorner[0] === 1){
+									this.quadFlipCorner = [3,1,3,1];
+								}
+								else{
+									this.quadFlipCorner = [1,3,1,3];
+								}
+								//console.log(this.botCenter);
+								//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
+							
+								//alert(this.halfBotLength);
+								//alert(this.quadFlipCorner);
+					           	this.findPointsToFlip();
+						    }
+			                
+
+				    	} 
+				    	else if (this.isRotate) { //if the action is a rotation
+				    		this.myTriangle.rotate(2/this.speed, this.center);
+							for (i = 0; i < 3; i++)
+							{
+								for (k = 0; k < 4; k++)
+								{
+									this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, this.center, (-Math.PI) / (90 * this.speed) );
+									//alert ( (-Math.PI) / (90 * this.speed) );
+								}
+							}
+				    		this.currentFrame++;
+
+				    		if(this.currentFrame >= 60*this.speed) {
+				    			this.isRotate = false;
+				    			this.currentFrame = 0;
+				    			this.setState();
+				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
+				    			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+								
+								//console.log(this.botCenter);
+				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
+				    			this.findPointsToFlip();
+
+				    		}
+				    	}
+
+				    	 else {
+				    		this.setState();
+				    	}
+				    } 
+
+				    else {	//non time-bound manipulation
+				    	var lastABC = "";
+				    	while(lastABC != this.currentABC)
+				    	{
+				    		lastABC = this.currentABC;
+				    		if(this.isFlip) {
+					    		this.flip();
+					    	} else if (this.isRotate) {
+					    		this.rotate();
+					    	}
+				    	}
+				    	this.setState();
+
+				    }
+
+				    //updating position of text for vertex lettering
+				    this.setLetterPositions();
+
+				    //resetting triangle colors to persist over transformations
+				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
+				    
+		    	}
+				
+				this.reset = function() {
+					this.setSym("", true);
+					this.currentABC = "ABC";
+				
+					for (i = 0; i < 3; i++) 	//reset vertices for equilateral triangle
+					{
+						this.myTriangle.segments[i].point = (new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, radius * -Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
+					}
+					
+						
+						this.topQuad.segments[0].point = (new Point(this.myTriangle.segments[0].point));
+						this.topQuad.segments[1].point = (new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[1].point.y)/2));
+						this.topQuad.segments[2].point = (new Point(this.center.x, this.center.y));
+						this.topQuad.segments[3].point = (new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[2].point.y)/2));
+						
+						
+						this.leftQuad.segments[0].point = (new Point(this.myTriangle.segments[1].point));
+						this.leftQuad.segments[1].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
+						this.leftQuad.segments[2].point = (new Point(this.center.x, this.center.y));
+						this.leftQuad.segments[3].point = (new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2))
+
+						this.rightQuad.segments[0].point = (new Point(this.myTriangle.segments[2].point));
+						this.rightQuad.segments[1].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
+						this.rightQuad.segments[2].point = (new Point(this.center.x, this.center.y));
+						this.rightQuad.segments[3].point = (new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
+					
+					
+					
+					
+					this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+					this.findPointsToFlip();
+	        	}
+				this.moveTri = function(npoint)
+				{
+					this.myTriangle.position += npoint;
+					for (i = 0 ; i < 3; i ++)
+					{
+						this.Quads[i].position += npoint;
+					}
+					this.center += npoint;
+				}
+
+				this.resizeTri = function(scalefac)
+				{
+					this.textOne.scale(scalefac);
+					this.textTwo.scale(scalefac);
+					this.textThree.scale(scalefac);
+					
+					var scalebound = 1;
+					if (this.textOne.scaling.x < scalebound)
+					{
+						this.textOne.scaling.x = scalebound;
+					}
+					if (this.textOne.scaling.y < scalebound)
+					{
+						this.textOne.scaling.y = scalebound;
+					}
+					if (this.textTwo.scaling.x < scalebound)
+					{
+						this.textTwo.scaling.x = scalebound;
+					}
+					if (this.textTwo.scaling.y < scalebound)
+					{
+						this.textTwo.scaling.y = scalebound;
+					}
+					if (this.textThree.scaling.x < scalebound)
+					{
+						this.textThree.scaling.x = scalebound;
+					}
+					if (this.textThree.scaling.y < scalebound)
+					{
+						this.textThree.scaling.y = scalebound;
+					}
+					
+					this.letterSpace *= scalefac;
+					var letterbound = 10;
+					if (this.letterSpace < letterbound)
+					{
+						this.letterSpace = letterbound;
+					}
+					
+					
+					this.myTriangle.scale(scalefac);
+					for (i = 0 ; i < 3; i ++)
+					{
+						for (k = 0; k < 4; k++)
+						{
+							var zeroPoint = this.Quads[i].segments[k].point - this.center;
+							zeroPoint.x *= scalefac;
+							zeroPoint.y *= scalefac;
+							this.Quads[i].segments[k].point = zeroPoint + this.center;
+						}
+					}
+					this.findPointsToFlip();
+					
+				}
+		    }
+			
+			
+			
+			function rotatePoints(pointa, pointb, ang)
+			{
+				var npoint = new Point(pointa.x - pointb.x, pointa.y - pointb.y);
+				
+				var rotpoint = new Point(npoint.x * Math.cos(ang) + npoint.y * Math.sin(ang), -npoint.x * Math.sin(ang) + npoint.y * Math.cos(ang));
+				
+				var retpoint = new Point(rotpoint.x + pointb.x, rotpoint.y + pointb.y);
+				//alert(ang);
+				//alert(Math.cos(ang));
+				return retpoint;
+			}
+
+		    function pText(point, icont, color, scale) { //constructor function for text located on a point
+		    	var text = new PointText(point);
+		    	text.content = icont;
+		    	text.fillColor = color;
+		    	text.scale(scale);
+		    	return text;
+		    }
+		    
+		    function sButton(point, size, colorBut, colorTex, text, func) { //class constructor for a clickable button
+		    	var rectangle = new Rectangle(point, size);
+		    	this.button = new Path.Rectangle(rectangle);
+		    	this.button.fillColor = colorBut;
+
+		    	var offset = new Point(0,0);
+		    	this.text = new pText(point-offset, text, colorTex, 4);
+		    	
+		    	var dothis = func;
+		    	this.button.onClick = function(event) {
+		    		dothis(event);
+		    	}
+		    }
+
+	      	var myTri = new symTri(new Point(500, 400), 250);	//creates triangle on (500,400) with radius 250
+	      	
+	      	myTri.setSym("", true);	//sets symmetry to empty	
+	      	myTri.setState();		//sets initial state
+	      	
+			/*
+			var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
+	      	myTri2.setSym(randString(), true);			//starts flipped -->
+	      	myTri2.timeBound = false;	//set to not be time-bound default=true -->
+	      	myTri2.setState();			//sets initial state --> -->
+			*/
+
+	      	
+	      	//var but1 = new sButton(new Point(325, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'R', but1f); //create new rotate button
+	      	//var but2 = new sButton(new Point(525, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'F', but2f); //create new flip button
+			//var butCheck = new sButton(new Point(725, 800), new Size(150, 50), new Color(1.000, .598, 0), new Color(.453, .105, .277), 'Check', butCheckSet); //create new flip button
+
+	      	function but1f() {	//function for rotation button press
+	      		myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
+	      		//alert(myTri.symmetry.string);
+	      	}
+
+	      	function but2f() {	//function for flip button press
+	      		myTri.setSym(myTri.symmetry.string + "F", false);	//appends "F" to the symmetry string
+	      		//alert(myTri.symmetry.string);
+	      	}
+			
+			function resetTri()
+			{
+				myTri.reset();
+			}
+			function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
+			var symVector = [];
+
+			function lockSym()
+			{
+				var newTri = clone(myTri);
+				//symVector.push(newTri);
+
+				//symVector[0].moveTri(0, 500);
+
+				//console.log(newTri.myTriangle.position);
+
+			}
+			
+			/*
+			function butCheckSet(event)
+			{
+				if (myTri.currentABC === myTri2.currentABC)
+				{
+					numCorrect = numCorrect + 1;
+					var tmpstr = "Correct: " + numCorrect;
+					numCorrectTxt.content = tmpstr;
+					myTri2.setSym(randString(), true);
+				}
+			}
+			*/
+			
+			function randString()
+			{
+				var strings = ["FF", "R", "RR", "F", "FR", "RF"];
+				var randomnumber = Math.floor(Math.random()*6)
+				return strings[randomnumber];
+			}
+	      	
+			/*var symText = new PointText(new Point(100, 100));	//text to display current symmstring
+			symText.fillColor = 'red';
+			symText.scale(6);*/
+
+			/*var fpsText = new PointText(new Point(1400, 50));	
+			fpsText.fillColor = 'red';
+			fpsText.content = '';
+			fpsText.scale(5);*/
+			
+			var numCorrect = 0;
+
+			var lastLoop = new Date;	//fps calculation time 
+
+	      	function onFrame(event) {
+	      		//fps calculations
+	      		var thisLoop = new Date;
+	      		var fps = 1000/(thisLoop-lastLoop);
+	      		lastLoop = thisLoop;
+
+	      		//updates fpsstring
+	      		//fpsText.content = fps;
+
+	      		//sets symmtext to be both the current and desired symmetry
+	      		//symText.content = myTri.symmetry.string + "\n" + myTri.symmetry.string.substring(0, myTri.symmetry.current); 
+
+	      		//updates the time-bound triangle
+	      		myTri.Update(event);
+	      		//myTri2.Update(event);
+	      		
+	      	}
+    
+			function toMenu() {
+				window.location.href = "Index.html";
+			}
+		
+			addButton("#bodyid", "Flip", "Flip", 50, 1200, "btn-md",but2f);
+			addButton("#bodyid", "Rotate", "Rotate", 50, 1400, "btn-md",but1f);
+			addButton("#bodyid", "Reset", "Reset", 50, 1700, "btn-md", resetTri);
+			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
+			addButton("#bodyid", "Menu", "Menu", 1600, 1600, "btn-lg", toMenu);
+			addButton("#bodyid", "Lock and Name", "Lock", 1400, 1400, "btn-lg", lockSym);
+			//alert("here");
+			
+		</script>
+</head>
+	<body>
+		<canvas id="myCanvas" style="z-index:1" resize></canvas>
+	</body>
+</html>
