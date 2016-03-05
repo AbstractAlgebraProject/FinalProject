@@ -222,7 +222,7 @@
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 	        	}
 
-	        	var please = 0;
+	        	
 	        	this.Update = function(event) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
@@ -502,19 +502,80 @@
 			{
 				myTri.reset();
 			}
-			function clone(obj) {
-    if (null == obj || "object" != typeof obj) return obj;
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }
-    return copy;
-}
+			
 			var symVector = [];
+			function clone( originalObject , circular )  
+			{
+			    // First create an empty object with
+			    // same prototype of our original source
 
+			    var propertyIndex ,
+			        descriptor ,
+			        keys ,
+			        current ,
+			        nextSource ,
+			        indexOf ,
+			        copies = [ {
+			            source: originalObject ,
+			            target: Object.create( Object.getPrototypeOf( originalObject ) )
+			        } ] ,
+			        cloneObject = copies[ 0 ].target ,
+			        sourceReferences = [ originalObject ] ,
+			        targetReferences = [ cloneObject ] ;
+
+			    // First in, first out
+			    while ( current = copies.shift() )
+			    {
+			        keys = Object.getOwnPropertyNames( current.source ) ;
+
+			        for ( propertyIndex = 0 ; propertyIndex < keys.length ; propertyIndex ++ )
+			        {
+			            // Save the source's descriptor
+			            descriptor = Object.getOwnPropertyDescriptor( current.source , keys[ propertyIndex ] ) ;
+
+			            if ( ! descriptor.value || typeof descriptor.value !== 'object' )
+			            {
+			                Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
+			                continue ;
+			            }
+
+			            nextSource = descriptor.value ;
+			            descriptor.value = Array.isArray( nextSource ) ?
+			                [] :
+			                Object.create( Object.getPrototypeOf( nextSource ) ) ;
+
+			            if ( circular )
+			            {
+			                indexOf = sourceReferences.indexOf( nextSource ) ;
+
+			                if ( indexOf !== -1 )
+			                {
+			                    // The source is already referenced, just assign reference
+			                    descriptor.value = targetReferences[ indexOf ] ;
+			                    Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
+			                    continue ;
+			                }
+
+			                sourceReferences.push( nextSource ) ;
+			                targetReferences.push( descriptor.value ) ;
+			            }
+
+			            Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
+
+			            copies.push( { source: nextSource , target: descriptor.value } ) ;
+			        }
+			    }
+
+			    return cloneObject ;
+			} 
 			function lockSym()
 			{
-				var newTri = clone(myTri);
+				var newTri = clone(myTri, true);
+				
+				newTri.moveTri(200, 200);
+				//newTri.resizeTri(.5);
+				console.log(newTri);
+				console.log(myTri);
 				//symVector.push(newTri);
 
 				//symVector[0].moveTri(0, 500);
