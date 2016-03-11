@@ -207,7 +207,7 @@
 		        	this.rVertex = this.myTriangle.segments[this.currentPoints[0]];
 		       		this.botCenter = (this.Quads[0].segments[0].point.x + this.Quads[1].segments[0].point.x) / 2;
 		        	this.halfBotLength = (this.botCenter - this.Quads[0].segments[0].point.x);
-					console.log(this.halfBotLength);
+					
 					
 	        	};
    
@@ -261,8 +261,8 @@
 							
 							this.Quads[0].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
 					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-							console.log(this.quadFlipCorner);
-							console.log(this.Quads[0].segments[0].point.x);
+							//console.log(this.quadFlipCorner);
+							//console.log(this.Quads[0].segments[0].point.x);
 							//console.log(this.Quads[0].segments[this.quadFlipCorner[0]].point);
 							
 							//alert(this.Quads[0].segments[0].point.x);
@@ -523,79 +523,29 @@
 				myTri.reset();
 			}
 			
-			var symVector = [];
-			function clone( originalObject , circular )  
-			{
-			    // First create an empty object with
-			    // same prototype of our original source
+			var triVec = [];
+			
 
-			    var propertyIndex ,
-			        descriptor ,
-			        keys ,
-			        current ,
-			        nextSource ,
-			        indexOf ,
-			        copies = [ {
-			            source: originalObject ,
-			            target: Object.create( Object.getPrototypeOf( originalObject ) )
-			        } ] ,
-			        cloneObject = copies[ 0 ].target ,
-			        sourceReferences = [ originalObject ] ,
-			        targetReferences = [ cloneObject ] ;
+			var lockData = {pos: new Point(600, 600), rad: 30};
 
-			    // First in, first out
-			    while ( current = copies.shift() )
-			    {
-			        keys = Object.getOwnPropertyNames( current.source ) ;
-
-			        for ( propertyIndex = 0 ; propertyIndex < keys.length ; propertyIndex ++ )
-			        {
-			            // Save the source's descriptor
-			            descriptor = Object.getOwnPropertyDescriptor( current.source , keys[ propertyIndex ] ) ;
-
-			            if ( ! descriptor.value || typeof descriptor.value !== 'object' )
-			            {
-			                Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
-			                continue ;
-			            }
-
-			            nextSource = descriptor.value ;
-			            descriptor.value = Array.isArray( nextSource ) ?
-			                [] :
-			                Object.create( Object.getPrototypeOf( nextSource ) ) ;
-
-			            if ( circular )
-			            {
-			                indexOf = sourceReferences.indexOf( nextSource ) ;
-
-			                if ( indexOf !== -1 )
-			                {
-			                    // The source is already referenced, just assign reference
-			                    descriptor.value = targetReferences[ indexOf ] ;
-			                    Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
-			                    continue ;
-			                }
-
-			                sourceReferences.push( nextSource ) ;
-			                targetReferences.push( descriptor.value ) ;
-			            }
-
-			            Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
-
-			            copies.push( { source: nextSource , target: descriptor.value } ) ;
-			        }
-			    }
-
-			    return cloneObject ;
-			} 
 			function lockSym()
 			{
-				var newTri = clone(myTri, true);
 				
-				newTri.moveTri(200, 200);
-				//newTri.resizeTri(.5);
-				console.log(newTri);
-				console.log(myTri);
+				var ntri = new symTri(lockData.pos, lockData.rad);
+				ntri.setSym("RF", true);
+				ntri.symmetry.current = ntri.symmetry.string.length;
+				ntri.timeBound = false;
+				ntri.setState();
+
+					
+				
+
+
+				triVec.push(ntri);
+				lockData.pos.x += 100;
+
+				console.log(ntri.symmetry.current);
+				
 				//symVector.push(newTri);
 
 				//symVector[0].moveTri(0, 500);
