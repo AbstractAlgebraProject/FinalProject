@@ -201,6 +201,8 @@
 	        	//non time-bound flip and rotate functions
 	        	this.rotate = function() {
 	        		
+					console.log("xxxSpotRotate");
+					
 	        		this.myTriangle.rotate(120, this.center);
 	        		this.isRotate = false;
 				    
@@ -210,11 +212,12 @@
 	        	}
 	        	this.flip = function() {
 					
+					console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 					
 	        		var tmp = this.lVertex;
-                    this.myTriangle.segments[this.currentPoints[0]] = this.rVertex;
-                    this.myTriangle.segments[this.currentPoints[1]] = tmp;
+                    //this.myTriangle.segments[this.currentPoints[0]] = this.rVertex;
+                    //this.myTriangle.segments[this.currentPoints[1]] = tmp;
 	        		this.isFlip = false;
 					           	
 					this.currentFrame = 0;
@@ -222,7 +225,6 @@
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 	        	}
 
-	        	var please = 0;
 	        	this.Update = function(event) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
@@ -316,12 +318,15 @@
 
 				    else {	//non time-bound manipulation
 				    	var lastABC = "";
+						console.log(this.currentABC);
 				    	while(lastABC != this.currentABC)
 				    	{
 				    		lastABC = this.currentABC;
 				    		if(this.isFlip) {
+								console.log("toFlip");
 					    		this.flip();
 					    	} else if (this.isRotate) {
+								console.log("toRotate");
 					    		this.rotate();
 					    	}
 				    	}
@@ -441,21 +446,24 @@
 		    		dothis(event);
 		    	}
 		    }
-
-	      	var myTri = new symTri(new Point(500, 400), 250);	//creates triangle on (500,400) with radius 250
+			
+			
+			var triData1 = {position: new Point(400,400), radius: 250};
+			var triData2 = {position: new Point(1100,400), radius: 250};
+	      	var myTri = new symTri(triData1.position, triData1.radius);	//creates triangle on (500,400) with radius 250
 	      	
 	      	myTri.setSym("", true);	//sets symmetry to empty	
 	      	myTri.setState();		//sets initial state
 	      	
-	      	var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
+	      	var myTri2 = new symTri(triData2.position, triData1.radius);	//second triangle 
 	      	myTri2.setSym(randString(), true);			//starts flipped
 	      	myTri2.timeBound = false;	//set to not be time-bound default=true
 	      	myTri2.setState();			//sets initial state
 
 
 
-			myTri.moveTri(new Point(100,100));
-			myTri.resizeTri(1);
+			//myTri.moveTri(new Point(100,100));
+			//myTri.resizeTri(1);
 	      	
 			
 			
@@ -480,8 +488,11 @@
 			
 			function butCheckSet(event)
 			{
+				console.log(myTri.currentABC);
+				console.log(myTri2.currentABC);
 				if (myTri.currentABC === myTri2.currentABC)
 				{
+					
 					numCorrect = numCorrect + 1;
 					var tmpstr = "Correct: " + numCorrect;
 					numCorrectTxt.content = tmpstr;
