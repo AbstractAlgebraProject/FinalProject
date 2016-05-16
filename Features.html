@@ -21,7 +21,7 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-				this.quadFlipCorner = [3,1,3,1];
+				this.quadFlipCorner = [1,3,1,3];
 	        	
 	        	this.speed = .5;
 	        	this.center = center;
@@ -201,29 +201,62 @@
 	        	//non time-bound flip and rotate functions
 	        	this.rotate = function() {
 	        		
+					//console.log("xxxSpotRotate");
+					
 	        		this.myTriangle.rotate(120, this.center);
+					for (i = 0; i < 3; i++)
+					{
+						for (k = 0; k < 4; k++)
+						{
+							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, this.center, -120 * Math.PI / 180);
+							//alert ( (-Math.PI) / (90 * this.speed) );
+						}
+					}
+					
+					
 	        		this.isRotate = false;
 				    
 				    this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
-				    			
+					this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
 				    this.findPointsToFlip();
 	        	}
 	        	this.flip = function() {
 					
+					//console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 					
-	        		var tmp = this.lVertex;
-                    this.myTriangle.segments[this.currentPoints[0]] = this.rVertex;
-                    this.myTriangle.segments[this.currentPoints[1]] = tmp;
+
+					
+					this.Quads[0].segments[0].point.x = -this.halfBotLength + this.botCenter;
+					this.Quads[0].segments[this.quadFlipCorner[0]].point.x = -this.halfBotLength/2 + this.botCenter;
+					
+					//alert(this.Quads[0].segments[0].point.x);
+
+					this.Quads[1].segments[0].point.x = this.halfBotLength + this.botCenter;
+					this.Quads[1].segments[this.quadFlipCorner[1]].point.x = this.halfBotLength/2 + this.botCenter;
+
+					this.Quads[2].segments[this.quadFlipCorner[2]].point.x = this.halfBotLength/2 + this.botCenter;
+					this.Quads[2].segments[this.quadFlipCorner[3]].point.x = -this.halfBotLength/2 + this.botCenter;
+					
+							
 	        		this.isFlip = false;
 					           	
 					this.currentFrame = 0;
-
+					
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+					
+					this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
+					//alert(this.quadFlipCorner);
+					if(this.quadFlipCorner[0] === 1){
+						this.quadFlipCorner = [3,1,3,1];
+					}
+					else{
+						this.quadFlipCorner = [1,3,1,3];
+					}
 	        	}
 
 	        	var please = 0;
-	        	this.Update = function(event) {
+				this.Update = function(event) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
 			        		
@@ -243,23 +276,15 @@
 							//alert (this.halfBotLength);
 							
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 							
 							//alert(this.Quads[0].segments[0].point.x);
 
 					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[this.quadFlipCorner[0]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 
 					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-							
-							console.log(this.Quads[0].segments[0].point);
-							console.log(this.Quads[0].segments[1].point);
-							console.log(this.Quads[0].segments[2].point);
-							console.log(this.Quads[0].segments[3].point);
-							console.log(this.quadFlipCorner);
-							console.log(this.halfBotLength);
-							console.log(this.currentFrame);
 
 
  							
@@ -285,6 +310,7 @@
 							
 								//alert(this.halfBotLength);
 								//alert(this.quadFlipCorner);
+								recordMove("F");
 					           	this.findPointsToFlip();
 						    }
 			                
@@ -312,6 +338,7 @@
 								
 								//console.log(this.botCenter);
 				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
+								recordMove("R");
 				    			this.findPointsToFlip();
 
 				    		}
@@ -324,12 +351,15 @@
 
 				    else {	//non time-bound manipulation
 				    	var lastABC = "";
+						//console.log(this.symmetry.string);
 				    	while(lastABC != this.currentABC)
 				    	{
 				    		lastABC = this.currentABC;
 				    		if(this.isFlip) {
+								//console.log("toFlip");
 					    		this.flip();
 					    	} else if (this.isRotate) {
+								//console.log("toRotate");
 					    		this.rotate();
 					    	}
 				    	}
@@ -376,7 +406,8 @@
 					
 					
 					this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-					this.quadFlipCorner = [3,1,3,1];
+					this.quadFlipCorner = [1,3,1,3];
+					resetMoveRecord();
 					this.findPointsToFlip();
 	        	}
 				this.moveTri = function(npoint)
@@ -481,7 +512,7 @@
 		    	}
 		    }
 
-	      	var myTri = new symTri(new Point(500, 400), 250);	//creates triangle on (500,400) with radius 250
+	      	var myTri = new symTri(new Point(500, 500), 150);	//creates triangle on (500,400) with radius 250
 	      	
 	      	myTri.setSym("", true);	//sets symmetry to empty	
 	      	myTri.setState();		//sets initial state
@@ -542,13 +573,40 @@
 			fpsText.content = '';
 			fpsText.scale(5);*/
 			
+			/*
 			var numCorrectTxt = new PointText(new Point(1200, 50));
 			numCorrectTxt.fillColor = new Color(.453, .105, .277);
 			numCorrectTxt.content = "Correct: 0";
 			numCorrectTxt.scale(5);
+			*/
 			
-			var numCorrect = 0;
+			//var numCorrect = 0;
 
+			var moveTxt = new PointText(new Point(300, 50));
+			moveTxt.fillColor = new Color(0, 0, 0);
+			moveTxt.content = "Moves";
+			moveTxt.scale(5);
+			
+			
+			var moveRecStr = "";
+			var moveRec = new PointText(new Point(200, 150));
+			moveRec.fillColor = new Color(0, 0, 0);
+			moveRec.content = moveRecStr;
+			moveRec.scale(5);
+			
+			
+			function recordMove(cha)
+			{
+				moveRecStr += cha;
+				moveRec.content = moveRecStr;
+			}
+			
+			function resetMoveRecord()
+			{
+				moveRecStr = "";
+				moveRec.content = moveRecStr;
+			}
+			
 			var lastLoop = new Date;	//fps calculation time 
 
 	      	function onFrame(event) {
@@ -573,11 +631,13 @@
 				window.location.href = "Index.html";
 			}
 		
-			addButton("#bodyid", "Flip", "Flip", 50, 1200, "btn-md",but2f);
-			addButton("#bodyid", "Rotate", "Rotate", 50, 1400, "btn-md",but1f);
-			addButton("#bodyid", "Reset", "Reset", 50, 1700, "btn-md", resetTri);
+			addButton("#bodyid", "Flip", "Flip", 50, 1300, "btn-md",but2f);
+			addButton("#bodyid", "Rotate", "Rotate", 50, 1500, "btn-md",but1f);
+			addButton("#bodyid", "Reset", "Reset", 50, 1800, "btn-md", resetTri);
 			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
-			addButton("#bodyid", "Menu", "Menu", 1600, 1600, "btn-lg", toMenu);
+			addButton("#bodyid", "Menu", "Menu", 1600, 1700, "btn-lg", toMenu);
+			addButton("#bodyid", "Next", "Next",  350, 1800, "btn-md", toMenu);
+			addButton("#bodyid", "Lock and Name", "Lock and Name", 1000, 1000, "btn-md", toMenu);
 			//alert("here");
 			
 		</script>
