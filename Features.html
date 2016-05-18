@@ -200,8 +200,7 @@
 				
 	        	//non time-bound flip and rotate functions
 	        	this.rotate = function() {
-	        		
-					//console.log("xxxSpotRotate");
+					console.log("xxxSpotRotate");
 					
 	        		this.myTriangle.rotate(120, this.center);
 					for (i = 0; i < 3; i++)
@@ -222,7 +221,7 @@
 	        	}
 	        	this.flip = function() {
 					
-					//console.log("xxxSpotFlip");
+					console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 					
 
@@ -317,6 +316,7 @@
 
 				    	} 
 				    	else if (this.isRotate) { //if the action is a rotation
+							
 				    		this.myTriangle.rotate(2/this.speed, this.center);
 							for (i = 0; i < 3; i++)
 							{
@@ -582,6 +582,41 @@
 			
 			//var numCorrect = 0;
 
+			
+			var triVec = [];
+			
+
+			var lockData = {pos: new Point(600, 600), rad: 30};
+
+			function lockSym()
+			{
+				console.log(myTri.symmetry.string);
+				var ntri = new symTri(lockData.pos, lockData.rad);
+				ntri.timeBound = false;
+				ntri.setSym(myTri.symmetry.string, true);
+				//ntri.symmetry.current = myTri.symmetry.string.length;
+				
+				ntri.setState();
+
+					
+				
+
+
+				triVec.push(ntri);
+				lockData.pos.x += 100;
+
+				console.log(ntri.symmetry.current);
+				
+				//symVector.push(newTri);
+
+				//symVector[0].moveTri(0, 500);
+
+				//console.log(newTri.myTriangle.position);
+
+			}
+
+
+			
 			var moveTxt = new PointText(new Point(300, 50));
 			moveTxt.fillColor = new Color(0, 0, 0);
 			moveTxt.content = "Moves";
@@ -623,6 +658,18 @@
 
 	      		//updates the time-bound triangle
 	      		myTri.Update(event);
+				
+				for (i = 0; i < triVec.length; i++)
+				{
+					console.log(i);
+					console.log(triVec.length);
+					if (i == 0)
+					{
+						triVec[0].Update(event);
+					
+					}
+					
+				}
 	      		//myTri2.Update(event);
 	      		
 	      	}
@@ -637,7 +684,7 @@
 			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1700, "btn-lg", toMenu);
 			addButton("#bodyid", "Next", "Next",  350, 1800, "btn-md", toMenu);
-			addButton("#bodyid", "Lock and Name", "Lock and Name", 1000, 1000, "btn-md", toMenu);
+			addButton("#bodyid", "Lock and Name", "Lock", 1000, 1000, "btn-md", lockSym);
 			//alert("here");
 			
 		</script>
