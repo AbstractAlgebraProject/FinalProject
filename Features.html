@@ -21,7 +21,7 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-				this.quadFlipCorner = [3,1,3,1];
+				this.quadFlipCorner = [1,3,1,3];
 	        	
 	        	this.speed = .5;
 	        	this.center = center;
@@ -243,12 +243,12 @@
 							//alert (this.halfBotLength);
 							
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 							
 							//alert(this.Quads[0].segments[0].point.x);
 
 					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[this.quadFlipCorner[0]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 
 					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
@@ -376,7 +376,7 @@
 					
 					
 					this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-					this.quadFlipCorner = [3,1,3,1];
+					this.quadFlipCorner = [1,3,1,3];
 					this.findPointsToFlip();
 	        	}
 				this.moveTri = function(npoint)
