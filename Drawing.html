@@ -24,7 +24,7 @@
 			view.viewSize.height = height;// = new Size(width, height);
 			//view.center = new Point(width, height);
 			//view.bounds = new Rectangle(width/4, height/4, width/2, height/2);
-			c.style.margin = height/4 + "px";
+			//c.style.margin = height/4 + "px";
 			
 			var tool = new Tool();
 			//tool.minDistance = 10;
@@ -41,7 +41,8 @@
 
 				// Add a segment to the path where
 				// you clicked:
-				path.add(event.point);
+				if(event.point.x < 900 && event.point.y < 700 && event.point.x > 300 && event.point.y > 100)
+					path.add(event.point);
 
 				//path.position = new Point(500, 500);
 			}
@@ -49,7 +50,8 @@
 			tool.onMouseDrag = function(event) {
 				// Every drag event, add a segment
 				// to the path at the position of the mouse:
-				path.add(event.point);
+				if(event.point.x < 900 && event.point.y < 700 && event.point.x > 300 && event.point.y > 100)
+					path.add(event.point);
 
 				//path.position = new Point(500, 500);
 
@@ -68,6 +70,28 @@
 				tempPaths = [];
 			}
 
+			function drawWindow(width, height, positionx, positiony){
+				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+			//	view.viewSize.width = width;
+			//	view.viewSize.height = height;
+				drawingWindow.strokeColor = 'blue';
+				drawingWindow.strokeWidth = 2;
+			}
+
+			function savedWindow(width, height, positionx, positiony){
+				var symWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+				var text = new PointText(new Point(positionx, positiony - 20));
+				text.fillColor = 'black';
+				text.justification = 'left';
+				text.fontSize = '36px';
+				text.content = "Saved Symmetries";
+				symWindow.strokeColor = 'blue';
+				symWindow.strokeWidth = 2;
+			}
+
+			drawWindow(600, 600, 300, 100);
+			savedWindow(300, 700, 1200, 100);
+
 			var group1 = new Group();
 			var groupF = new Group();
 			var groupR = new Group();
@@ -77,52 +101,58 @@
 
 			var symmetrySymbols = [group1, groupF, groupR, groupFR, groupFRR, groupRR];
 
-			var positionsY = [200, 400, 600, 800, 1000, 1200];
+			var positionsY = [000, 200, 400, 600, 800, 1000];
 			function set1(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[0]);
+				//compoundPath.position = new Point(800, positionsY[0]);
 				group1.removeChildren();
 				group1 = compoundPath.clone();
+				group1.visible = false;
 				compoundPath.removeChildren();
 			}
 
 			function setF(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[1]);
+				//compoundPath.position = new Point(800, positionsY[1]);
 				groupF.removeChildren();
 				groupF = compoundPath.clone();
+				groupF.visible = false;
 				compoundPath.removeChildren();
 			}
 
 			function setR(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[2]);
+				//compoundPath.position = new Point(800, positionsY[2]);
 				groupR.removeChildren();
 				groupR = compoundPath.clone();
+				groupR.visible = false;
 				compoundPath.removeChildren();
 			}
 
 			function setFR(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[3]);
+				//compoundPath.position = new Point(800, positionsY[3]);
 				groupFR.removeChildren();
 				groupFR = compoundPath.clone();
+				groupFR.visible = false;
 				compoundPath.removeChildren();
 			}
 
 			function setFRR(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[4]);
+				//compoundPath.position = new Point(800, positionsY[4]);
 				groupFRR.removeChildren();
 				groupFRR = compoundPath.clone();
+				groupFRR.visible = false;
 				compoundPath.removeChildren();
 			}
 
 			function setRR(){
 				addPath();
-				compoundPath.position = new Point(800, positionsY[5]);
+				//compoundPath.position = new Point(800, positionsY[5]);
 				groupRR.removeChildren();
 				groupRR = compoundPath.clone();
+				groupRR.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -132,12 +162,12 @@
 		}
 
 		//addButton("#bodyid", "Clear", "Path", 0, 1407, "btn-lg", addPath);
-		addButton('#bodyid', "1", "1", 0, 0, "btn-lg", set1);
-		addButton('#bodyid', "F", "F", 0, 200, "btn-lg", setF);
-		addButton('#bodyid', "R", "R", 0, 400, "btn-lg", setR);
-		addButton('#bodyid', "FR", "FR", 0, 600, "btn-lg", setFR);
-		addButton('#bodyid', "FRR", "FRR", 0, 800, "btn-lg", setFRR);
-		addButton('#bodyid', "RR", "RR", 0, 1000, "btn-lg", setRR);
+		addButton('#bodyid', "1", "1", 0, 0, "btn-md", set1);
+		addButton('#bodyid', "F", "F", 0, 100, "btn-md", setF);
+		addButton('#bodyid', "R", "R", 0, 200, "btn-md", setR);
+		addButton('#bodyid', "FR", "FR", 0, 300, "btn-md", setFR);
+		addButton('#bodyid', "FRR", "FRR", 0, 400, "btn-md", setFRR);
+		addButton('#bodyid', "RR", "RR", 0, 500, "btn-md", setRR);
 
 	</script>
 		
