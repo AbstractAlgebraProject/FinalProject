@@ -27,18 +27,25 @@
 			//c.style.margin = height/4 + "px";
 			
 			var tool = new Tool();
-			//tool.minDistance = 10;
+			tool.minDistance = 10;
 
 			var symbolMap = {};
 			var path;
 			var tempPaths = [];
 			var compoundPath = new Group();
 
+			var xMin = 300;
+			var xMax = 900;
+
+			var yMin = 100;
+			var yMax = 700;
+
 		    tool.onMouseDown = function(event) {
 				// Create a new path and give it a stroke color:
+				
 				path = new Path();
 				path.strokeColor = '#00000';
-
+			
 				// Add a segment to the path where
 				// you clicked:
 				if(event.point.x < 900 && event.point.y < 700 && event.point.x > 300 && event.point.y > 100)
@@ -58,6 +65,7 @@
 			}
 
 			tool.onMouseUp = function(event){
+				path.smooth();
 				tempPaths.push(path);
 			}
 
@@ -78,6 +86,8 @@
 				drawingWindow.strokeWidth = 2;
 			}
 
+			var symNames = ["1", "F", "R", "FR", "FRR", "RR"];
+
 			function savedWindow(width, height, positionx, positiony){
 				var symWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
 				var text = new PointText(new Point(positionx, positiony - 20));
@@ -87,10 +97,22 @@
 				text.content = "Saved Symmetries";
 				symWindow.strokeColor = 'blue';
 				symWindow.strokeWidth = 2;
+
+
+				for(i = 0; i < 6; i++){
+					var symText = new PointText(new Point(positionx, positiony + (i+.6) * 100));
+					symText.fillColor = 'black';
+					symText.justification = 'left';
+					symText.fontSize = '36px';
+					symText.content = symNames[i];
+
+					var line = new Path.Line(new Point(positionx, positiony + (i+1) * 100), new Point(positionx + width, positiony + (i+1) * 100));
+					line.strokeColor = 'blue';
+				}
 			}
 
 			drawWindow(600, 600, 300, 100);
-			savedWindow(300, 700, 1200, 100);
+			savedWindow(300, 600, 1200, 100);
 
 			var group1 = new Group();
 			var groupF = new Group();
@@ -101,13 +123,15 @@
 
 			var symmetrySymbols = [group1, groupF, groupR, groupFR, groupFRR, groupRR];
 
-			var positionsY = [000, 200, 400, 600, 800, 1000];
+			var positionsY = [000, 100, 300, 400, 500, 600];
 			function set1(){
 				addPath();
 				//compoundPath.position = new Point(800, positionsY[0]);
 				group1.removeChildren();
 				group1 = compoundPath.clone();
-				group1.visible = false;
+				group1.scale(1/6);
+				group1.position = new Point(1350, 150);
+				//group1.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -116,7 +140,9 @@
 				//compoundPath.position = new Point(800, positionsY[1]);
 				groupF.removeChildren();
 				groupF = compoundPath.clone();
-				groupF.visible = false;
+				groupF.scale(1/6);
+				groupF.position = new Point(1350, 250);
+				//groupF.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -125,7 +151,9 @@
 				//compoundPath.position = new Point(800, positionsY[2]);
 				groupR.removeChildren();
 				groupR = compoundPath.clone();
-				groupR.visible = false;
+				groupR.scale(1/6);
+				groupR.position = new Point(1350, 350);
+				//groupR.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -134,7 +162,10 @@
 				//compoundPath.position = new Point(800, positionsY[3]);
 				groupFR.removeChildren();
 				groupFR = compoundPath.clone();
-				groupFR.visible = false;
+				groupFR.scale(1/6);
+				groupFR.position = new Point(1350, 450);
+
+				//groupFR.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -143,7 +174,10 @@
 				//compoundPath.position = new Point(800, positionsY[4]);
 				groupFRR.removeChildren();
 				groupFRR = compoundPath.clone();
-				groupFRR.visible = false;
+				groupFRR.scale(1/6);
+				groupFRR.position = new Point(1350, 550);
+
+				//groupFRR.visible = false;
 				compoundPath.removeChildren();
 			}
 
@@ -152,7 +186,10 @@
 				//compoundPath.position = new Point(800, positionsY[5]);
 				groupRR.removeChildren();
 				groupRR = compoundPath.clone();
-				groupRR.visible = false;
+				groupRR.scale(1/6);
+				groupRR.position = new Point(1350, 650);
+
+				//groupRR.visible = false;
 				compoundPath.removeChildren();
 			}
 
