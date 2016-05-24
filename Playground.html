@@ -279,8 +279,15 @@
 							
 							//alert(this.Quads[0].segments[0].point.x);
 
+<<<<<<< HEAD
+					        //this.Quads[0].segments[0].point.x = this.lVertex.point.x;
+					        //this.Quads[0].segments[3].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+							this.Quads[1].segments[0].point.x =	this.rVertex.point.x;
+					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+=======
 					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
 					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
+>>>>>>> 5001a3e18b4d8df9299f45347b37dd7a8802acd1
 
 					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
@@ -294,6 +301,9 @@
 					           	this.currentFrame = 0; 
 					           	this.setState();
 					           	this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
+<<<<<<< HEAD
+					           	//this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
+=======
 
 					           	//this.Quads.splice(1, 0, this.Quads.splice(0, 1)[0]);
 					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
@@ -309,6 +319,7 @@
 							
 								//alert(this.halfBotLength);
 								//alert(this.quadFlipCorner);
+>>>>>>> 5001a3e18b4d8df9299f45347b37dd7a8802acd1
 					           	this.findPointsToFlip();
 						    }
 			                
@@ -331,11 +342,16 @@
 				    			this.currentFrame = 0;
 				    			this.setState();
 				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+<<<<<<< HEAD
+				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
+				    			
+=======
 				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
 				    			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
 								
 								//console.log(this.botCenter);
 				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
+>>>>>>> 5001a3e18b4d8df9299f45347b37dd7a8802acd1
 				    			this.findPointsToFlip();
 
 				    		}

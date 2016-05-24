@@ -412,10 +412,6 @@
 					this.quadFlipCorner = [1,3,1,3];
 
 					resetMoveRecord();
-<<<<<<< HEAD
-
-=======
->>>>>>> c47327cf1be068ea46602ce968c2fac5dad295d0
 					this.findPointsToFlip();
 	        	}
 				this.moveTri = function(npoint)
@@ -486,7 +482,133 @@
 			
 			
 			
+			function drawSquare(tlpoint, brpoint)
+			{
+				this.c = document.getElementById("myCanvas");
+				this.context = this.c.getContext("2d");
+				this.width = $(document).width() - 20;
+				this.height = $(document).height() - 20;
 
+				view.viewSize.width = this.width;
+				view.viewSize.height = this.height;// = new Size(width, height);
+				//view.center = new Point(width, height);
+				//view.bounds = new Rectangle(width/4, height/4, width/2, height/2);
+				//c.style.margin = height/4 + "px";
+				
+				this.tool = new Tool();
+				this.tool.minDistance = 10;
+
+				this.symbolMap = {};
+				this.path;
+				this.tempPaths = [];
+				console.log(this.tempPaths.length);
+				
+				this.compoundPath = new Group();
+
+				this.xMin = tlpoint.x;
+				this.xMax = brpoint.x;
+
+				this.yMin = tlpoint.y;
+				this.yMax = brpoint.y;
+
+				this.tool.onMouseDown = function(event) {
+					// Create a new path and give it a stroke color:
+					
+					this.path = new Path();
+					this.path.strokeColor = '#00000';
+				
+					// Add a segment to the path where
+					// you clicked:
+					if(event.point.x < this.xMax && event.point.y < this.yMax && event.point.x > this.xMin && event.point.y > this.yMin)
+						this.path.add(event.point);
+
+					//path.position = new Point(500, 500);
+				}
+
+				this.tool.onMouseDrag = function(event) {
+					// Every drag event, add a segment
+					// to the path at the position of the mouse:
+					if(event.point.x < this.xMax && event.point.y < this.yMax && event.point.x > this.xMin && event.point.y > this.yMin)
+						this.path.add(event.point);
+
+					//path.position = new Point(500, 500);
+
+				}
+				
+				this.tool.onMouseUp = function(){
+					this.path.smooth();
+					
+					console.log(this.tempPaths.length);
+					this.tempPaths.push(this.path);
+				}
+
+				this.addPath = function() {
+					for(i = 0; i < this.tempPaths.length; i++){
+						this.compoundPath.addChild(tempPaths[i]);
+						//tempPaths[i].translate(new Point(300, 300));
+						//tempPaths[i].visible = true;
+					}
+					this.tempPaths = [];
+				}
+
+				this.drawWindow = function(width, height, positionx, positiony){
+					var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+				//	view.viewSize.width = width;
+				//	view.viewSize.height = height;
+					drawingWindow.strokeColor = 'blue';
+					drawingWindow.strokeWidth = 2;
+				}
+
+				this.symNames = ["1", "F", "R", "FR", "FRR", "RR"];
+
+				this.savedWindow = function(width, height, positionx, positiony){
+					var symWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+					var text = new PointText(new Point(positionx, positiony - 20));
+					text.fillColor = 'black';
+					text.justification = 'left';
+					text.fontSize = '36px';
+					text.content = "Saved Symmetries";
+					symWindow.strokeColor = 'blue';
+					symWindow.strokeWidth = 2;
+
+
+					for(i = 0; i < 6; i++){
+						var symText = new PointText(new Point(positionx, positiony + (i+.6) * 100));
+						symText.fillColor = 'black';
+						symText.justification = 'left';
+						symText.fontSize = '36px';
+						symText.content = this.symNames[i];
+
+						var line = new Path.Line(new Point(positionx, positiony + (i+1) * 100), new Point(positionx + width, positiony + (i+1) * 100));
+						line.strokeColor = 'blue';
+					}
+				}
+
+				this.drawWindow(600, 600, 300, 100);
+				this.savedWindow(300, 600, 1200, 100);
+				
+				this.group1 = new Group();
+				
+				this.symmetrySymbols = [this.group1];
+
+				this.positionsY = [000];
+				
+				this.set1 = function(){
+					this.addPath();
+					//compoundPath.position = new Point(800, positionsY[0]);
+					this.group1.removeChildren();
+					this.group1 = this.compoundPath.clone();
+					this.group1.scale(1/6);
+					this.group1.position = new Point(1350, 150);
+					//group1.visible = false;
+					this.compoundPath.removeChildren();
+				}
+			
+				addButton('#bodyid', "1", "1", 0, 0, "btn-md", this.set1);
+			
+			
+			
+			}
 			
 			
 			function rotatePoints(pointa, pointb, ang)
@@ -523,7 +645,7 @@
 		    	}
 		    }
 
-	      	var myTri = new symTri(new Point(500, 500), 200);	//creates triangle on (500,400) with radius 250
+	      	var myTri = new symTri(new Point(500, 500), 150);	//creates triangle on (500,400) with radius 250
 	      	
 	      	myTri.setSym("", true);	//sets symmetry to empty	
 	      	myTri.setState();		//sets initial state
@@ -647,6 +769,7 @@
 			moveRec.scale(5);
 			
 			
+			var drawer = new drawSquare(new Point(300,100), new Point(900,700));
 			function recordMove(cha)
 			{
 				moveRecStr += cha;
@@ -694,178 +817,7 @@
 			function toMenu() {
 				window.location.href = "Index.html";
 			}
-
-														////////////////////////////////////////////////////////////////////
-														//////////////////////////////drawing///////////////////////////////
-														////////////////////////////////////////////////////////////////////
-
-			var c = document.getElementById("myCanvas");
-			var context = c.getContext("2d");
-			var width = $(document).width() - 20;
-			var height = $(document).height() - 20;
-
-			view.viewSize.width = width;
-			view.viewSize.height = height;// = new Size(width, height);
-			//view.center = new Point(width, height);
-			//view.bounds = new Rectangle(width/4, height/4, width/2, height/2);
-			//c.style.margin = height/4 + "px";
-			
-			var tool = new Tool();
-			//tool.minDistance = 10;
-
-			var symbolMap = {};
-			var path;
-			var tempPaths = [];
-			var compoundPath = new Group();
-
-			var xMin, xMax, yMin, yMax;
-
-		    tool.onMouseDown = function(event) {
-				// Create a new path and give it a stroke color:
-				path = new Path();
-				path.strokeColor = '#00000';
-
-				// Add a segment to the path where
-				// you clicked:
-				if(event.point.x < xMax && event.point.y < yMax && event.point.x > xMin && event.point.y > yMin)
-					path.add(event.point);
-
-				//path.position = new Point(500, 500);
-			}
-
-			tool.onMouseDrag = function(event) {
-				// Every drag event, add a segment
-				// to the path at the position of the mouse:
-				if(event.point.x < xMax && event.point.y < yMax && event.point.x > xMin && event.point.y > yMin)
-					path.add(event.point);
-
-				//path.position = new Point(500, 500);
-
-			}
-
-			tool.onMouseUp = function(event){
-				tempPaths.push(path);
-			}
-
-			function addPath() {
-				
-				for(i = 0; i < tempPaths.length; i++){
-					compoundPath.addChild(tempPaths[i]);
-					//tempPaths[i].translate(new Point(300, 300));
-					//tempPaths[i].visible = true;
-				}
-				tempPaths = [];
-			}
-
-			function drawWindow(width, height, positionx, positiony){
-				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-			//	view.viewSize.width = width;
-			//	view.viewSize.height = height;
-				drawingWindow.strokeColor = 'blue';
-				drawingWindow.strokeWidth = 2;
-
-				xMin = positionx;
-				xMax = positionx + width;
-				yMin = positiony;
-				yMax = positiony + height;
-			}
-
-			function savedWindow(width, height, positionx, positiony){
-				var symWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-				var text = new PointText(new Point(positionx, positiony - 20));
-				text.fillColor = 'black';
-				text.justification = 'left';
-				text.fontSize = '36px';
-				text.content = "Saved Symmetries";
-				symWindow.strokeColor = 'blue';
-				symWindow.strokeWidth = 2;
-			}
-
-			drawWindow(700, 500, 1000, 150);
-			savedWindow(600, 100, 1000, 800);
-
-			var group1 = new Group();
-			var groupF = new Group();
-			var groupR = new Group();
-			var groupFR = new Group();
-			var groupFRR = new Group();
-			var groupRR = new Group();
-
-			var symmetrySymbols = [group1, groupF, groupR, groupFR, groupFRR, groupRR];
-
-			var positionsX = [000, 200, 400, 600, 800, 1000];
-			
-			function set1(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[0]);
-				group1.removeChildren();
-				group1 = compoundPath.clone();
-				group1.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			function setF(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[1]);
-				groupF.removeChildren();
-				groupF = compoundPath.clone();
-				groupF.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			function setR(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[2]);
-				groupR.removeChildren();
-				groupR = compoundPath.clone();
-				groupR.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			function setFR(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[3]);
-				groupFR.removeChildren();
-				groupFR = compoundPath.clone();
-				groupFR.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			function setFRR(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[4]);
-				groupFRR.removeChildren();
-				groupFRR = compoundPath.clone();
-				groupFRR.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			function setRR(){
-				addPath();
-				//compoundPath.position = new Point(800, positionsY[5]);
-				groupRR.removeChildren();
-				groupRR = compoundPath.clone();
-				groupRR.visible = false;
-				compoundPath.removeChildren();
-			}
-
-			
-		function toPlayground() {
-			window.location.href = "Playground.html"
-		}
-
-		//addButton("#bodyid", "Clear", "Path", 0, 1407, "btn-lg", addPath);
 		
-		
-<<<<<<< HEAD
-			addButton("#bodyid", "Flip", "Flip", 50, 200, "btn-md",but2f);
-			addButton("#bodyid", "Rotate", "Rotate", 50, 400, "btn-md",but1f);
-			addButton("#bodyid", "Reset", "Reset", 50, 800, "btn-md", resetTri);
-			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
-			addButton("#bodyid", "Menu", "Menu", 350, 800, "btn-md", toMenu);
-			addButton("#bodyid", "Next", "Next",  350, 1800, "btn-md", toMenu);
-			addButton("#bodyid", "Lock and Name", "Lock", 1000, 25, "btn-md", lockSym);
-=======
 
 			addButton("#bodyid", "Flip", "Flip", 50, 300, "btn-md",but2f);
 			addButton("#bodyid", "Rotate", "Rotate", 50, 500, "btn-md",but1f);
@@ -875,7 +827,6 @@
 			addButton("#bodyid", "Next", "Next",  350, 800, "btn-md", toMenu);
 			addButton("#bodyid", "Lock and Name", "Lock", 1000, 200, "btn-md", lockSym);
 
->>>>>>> c47327cf1be068ea46602ce968c2fac5dad295d0
 			//alert("here");
 			
 		</script>
