@@ -202,7 +202,7 @@
 				
 	        	//non time-bound flip and rotate functions
 	        	this.rotate = function() {
-					//console.log("xxxSpotRotate");
+					console.log("xxxSpotRotate");
 					
 	        		this.myTriangle.rotate(120, this.center);
 					for (i = 0; i < 3; i++)
@@ -223,7 +223,7 @@
 	        	}
 	        	this.flip = function() {
 					
-					//console.log("xxxSpotFlip");
+					console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 					
 
@@ -645,24 +645,14 @@
 	      		//updates the time-bound triangle
 	      		myTri.Update(event);
 				
-<<<<<<< HEAD
 				for (ll = 0; ll < triVec.length; ll++)
 				{
 					//console.log(i);
 					//console.log(triVec.length);
 					
 					triVec[ll].Update(event);
-=======
-				for (kk = 0; kk < triVec.length; kk++)
-				{
-					
-					//console.log(triVec.length);
-					triVec[kk].Update(event);
-
->>>>>>> 289894059f909d5661063630ae3e5325d96f380b
 					
 				}
-				//console.log("endLoop");
 	      		//myTri2.Update(event);
 	      		
 	      	}
@@ -836,7 +826,6 @@
 
 			function lockSym()
 			{
-<<<<<<< HEAD
 				if(symOrder.contains(myTri.symmetry.string) === false){
 					console.log(myTri.symmetry.string);
 					var ntri = new symTri((lockData.pos), lockData.rad);
@@ -846,15 +835,6 @@
 					ntri.textTwo.scale(2/3);
 					ntri.textThree.scale(2/3);
 
-=======
-				//console.log(myTri.symmetry.string);
-				var ntri = new symTri(lockData.pos, lockData.rad);
-				ntri.timeBound = false;
-				ntri.setSym(myTri.symmetry.string, true);
-				ntri.textOne.scale(2/3);
-				ntri.textTwo.scale(2/3);
-				ntri.textThree.scale(2/3);
->>>>>>> 289894059f909d5661063630ae3e5325d96f380b
 				//ntri.symmetry.current = myTri.symmetry.string.length;
 				
 					ntri.setState();
