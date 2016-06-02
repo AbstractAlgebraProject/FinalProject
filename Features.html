@@ -525,6 +525,7 @@
 	      	myTri.setSym("", true);	//sets symmetry to empty	
 	      	myTri.setState();		//sets initial state
 	      	
+
 			/*
 			var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
 	      	myTri2.setSym(randString(), true);			//starts flipped -->
@@ -626,6 +627,7 @@
 				moveRec.content = moveRecStr;
 			}
 			
+			var triVec = [];
 			var lastLoop = new Date;	//fps calculation time 
 
 	      	function onFrame(event) {
@@ -643,15 +645,12 @@
 	      		//updates the time-bound triangle
 	      		myTri.Update(event);
 				
-				for (i = 0; i < triVec.length; i++)
+				for (ll = 0; ll < triVec.length; ll++)
 				{
-					console.log(i);
-					console.log(triVec.length);
-					if (i == 0)
-					{
-						triVec[0].Update(event);
+					//console.log(i);
+					//console.log(triVec.length);
 					
-					}
+					triVec[ll].Update(event);
 					
 				}
 	      		//myTri2.Update(event);
@@ -662,9 +661,11 @@
 				window.location.href = "Index.html";
 			}
 
-														////////////////////////////////////////////////////////////////////
-														//////////////////////////////drawing///////////////////////////////
-														////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////// | /////////////////// | ///////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////// | //////drawing////// | ///////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////// V /////////////////// V ///////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			var c = document.getElementById("myCanvas");
 			var context = c.getContext("2d");
@@ -759,6 +760,7 @@
 			var groupFRR = new Group();
 			var groupRR = new Group();
 
+			var symOrder = [];
 			var symmetrySymbols = {};
 			symmetrySymbols['1'] = group1;
 			symmetrySymbols['F'] = groupF;
@@ -769,10 +771,24 @@
 
 			var positionsX = [000, 200, 400, 600, 800, 1000];
 			
-			var triVec = [];
+			
 			
 
 			var lockData = {pos: new Point(880, 825), rad: 20};
+
+			Array.prototype.contains = function(element)					//added function to arrays that checks if something is in it or not
+			{
+				var isIn = false;
+
+				for(i = 0; i < this.length; i++)
+				{
+					if(this[i] === element){
+						isIn = true;
+						break;
+					}
+				}
+				return isIn;
+			}
 
 			function replaceAll(String, oldString, newString){				//function doesn't exist in javascript so i made it for convenience
 					return String.replace(new RegExp(oldString, 'g'), newString); 
@@ -810,28 +826,34 @@
 
 			function lockSym()
 			{
-				console.log(myTri.symmetry.string);
-				var ntri = new symTri(lockData.pos, lockData.rad);
-				ntri.timeBound = false;
-				ntri.setSym(myTri.symmetry.string, true);
-				ntri.textOne.scale(2/3);
-				ntri.textTwo.scale(2/3);
-				ntri.textThree.scale(2/3);
+				if(symOrder.contains(myTri.symmetry.string) === false){
+					console.log(myTri.symmetry.string);
+					var ntri = new symTri((lockData.pos), lockData.rad);
+					ntri.timeBound = false;
+					ntri.setSym(myTri.symmetry.string, true);
+					ntri.textOne.scale(2/3);
+					ntri.textTwo.scale(2/3);
+					ntri.textThree.scale(2/3);
+
 				//ntri.symmetry.current = myTri.symmetry.string.length;
 				
-				ntri.setState();
+					ntri.setState();
 
-				triVec.push(ntri);
-				
+					triVec.push(ntri);
+					symOrder.push(myTri.symmetry.string);
+				}
 
-				console.log(ntri.symmetry.current);
+				//console.log(ntri.symmetry.current);
 
 				addPath();
 
-				compoundPath.scale(1/3);
+				compoundPath.scale(1/4);
+
+				
+
 				symmetrySymbols[Simplify(myTri.symmetry.string)].removeChildren();
 				symmetrySymbols[Simplify(myTri.symmetry.string)] = compoundPath.clone();
-				symmetrySymbols[Simplify(myTri.symmetry.string)].position = new Point(lockData.pos.x + 50, lockData.pos.y);
+				symmetrySymbols[Simplify(myTri.symmetry.string)].position = new Point(830 + 140 * (symOrder.indexOf(myTri.symmetry.string) + 1), lockData.pos.y);
 
 				compoundPath.removeChildren();
 
@@ -843,7 +865,7 @@
 				//symVector[0].moveTri(0, 500);
 
 				//console.log(newTri.myTriangle.position);
-
+				resetTri();
 			}
 			
 		function toPlayground() {
