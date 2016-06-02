@@ -30,9 +30,7 @@
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
-
 					this.myTriangle.add(new Point(radius * Math.cos(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.x, -radius * Math.sin(Math.PI / 2 + (-i * Math.PI * 2 / 3)) + center.y));
-
 	        	}
 
 	        			//creating vertices for quadrilaterals inside the triangle
@@ -202,7 +200,7 @@
 				
 	        	//non time-bound flip and rotate functions
 	        	this.rotate = function() {
-					//console.log("xxxSpotRotate");
+					console.log("xxxSpotRotate");
 					
 	        		this.myTriangle.rotate(120, this.center);
 					for (i = 0; i < 3; i++)
@@ -223,7 +221,7 @@
 	        	}
 	        	this.flip = function() {
 					
-					//console.log("xxxSpotFlip");
+					console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 					
 
@@ -255,7 +253,6 @@
 						this.quadFlipCorner = [1,3,1,3];
 					}
 	        	}
-				
 
 	        	var please = 0;
 				this.Update = function(event) {
@@ -410,9 +407,7 @@
 					
 					this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
 					this.quadFlipCorner = [1,3,1,3];
-
 					resetMoveRecord();
-
 					this.findPointsToFlip();
 	        	}
 				this.moveTri = function(npoint)
@@ -483,9 +478,6 @@
 			
 			
 			
-
-			
-			
 			function rotatePoints(pointa, pointb, ang)
 			{
 				var npoint = new Point(pointa.x - pointb.x, pointa.y - pointb.y);
@@ -520,12 +512,11 @@
 		    	}
 		    }
 
-	      	var myTri = new symTri(new Point(500, 500), 200);	//creates triangle on (500,400) with radius 250
+	      	var myTri = new symTri(new Point(500, 500), 150);	//creates triangle on (500,400) with radius 250
 	      	
 	      	myTri.setSym("", true);	//sets symmetry to empty	
 	      	myTri.setState();		//sets initial state
 	      	
-
 			/*
 			var myTri2 = new symTri(new Point(1100, 400), 250);	//second triangle 
 	      	myTri2.setSym(randString(), true);			//starts flipped -->
@@ -550,9 +541,7 @@
 			
 			function resetTri()
 			{
-
 				myTri.reset();
-
 			}
 			
 			/*
@@ -575,9 +564,6 @@
 				return strings[randomnumber];
 			}
 	      	
-			function lock_and_name()
-			{
-			}
 			/*var symText = new PointText(new Point(100, 100));	//text to display current symmstring
 			symText.fillColor = 'red';
 			symText.scale(6);*/
@@ -593,12 +579,41 @@
 			numCorrectTxt.content = "Correct: 0";
 			numCorrectTxt.scale(5);
 			*/
-
 			
 			//var numCorrect = 0;
 
 			
+			var triVec = [];
 			
+
+			var lockData = {pos: new Point(600, 600), rad: 30};
+
+			function lockSym()
+			{
+				console.log(myTri.symmetry.string);
+				var ntri = new symTri(lockData.pos, lockData.rad);
+				ntri.timeBound = false;
+				ntri.setSym(myTri.symmetry.string, true);
+				//ntri.symmetry.current = myTri.symmetry.string.length;
+				
+				ntri.setState();
+
+					
+				
+
+
+				triVec.push(ntri);
+				lockData.pos.x += 100;
+
+				console.log(ntri.symmetry.current);
+				
+				//symVector.push(newTri);
+
+				//symVector[0].moveTri(0, 500);
+
+				//console.log(newTri.myTriangle.position);
+
+			}
 
 
 			
@@ -627,7 +642,6 @@
 				moveRec.content = moveRecStr;
 			}
 			
-			var triVec = [];
 			var lastLoop = new Date;	//fps calculation time 
 
 	      	function onFrame(event) {
@@ -645,24 +659,17 @@
 	      		//updates the time-bound triangle
 	      		myTri.Update(event);
 				
-<<<<<<< HEAD
-				for (ll = 0; ll < triVec.length; ll++)
+				for (i = 0; i < triVec.length; i++)
 				{
-					//console.log(i);
-					//console.log(triVec.length);
+					console.log(i);
+					console.log(triVec.length);
+					if (i == 0)
+					{
+						triVec[0].Update(event);
 					
-					triVec[ll].Update(event);
-=======
-				for (kk = 0; kk < triVec.length; kk++)
-				{
-					
-					//console.log(triVec.length);
-					triVec[kk].Update(event);
-
->>>>>>> 289894059f909d5661063630ae3e5325d96f380b
+					}
 					
 				}
-				//console.log("endLoop");
 	      		//myTri2.Update(event);
 	      		
 	      	}
@@ -670,243 +677,14 @@
 			function toMenu() {
 				window.location.href = "Index.html";
 			}
-
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////// | /////////////////// | ///////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////// | //////drawing////// | ///////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////// V /////////////////// V ///////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-			var c = document.getElementById("myCanvas");
-			var context = c.getContext("2d");
-			var width = $(document).width() - 20;
-			var height = $(document).height() - 20;
-
-			view.viewSize.width = width;
-			view.viewSize.height = height;// = new Size(width, height);
-			//view.center = new Point(width, height);
-			//view.bounds = new Rectangle(width/4, height/4, width/2, height/2);
-			//c.style.margin = height/4 + "px";
-			
-			var tool = new Tool();
-			tool.minDistance = 10;
-
-			var symbolMap = {};
-			var path;
-			var tempPaths = [];
-			var compoundPath = new Group();
-
-			var xMin, xMax, yMin, yMax;
-
-		    tool.onMouseDown = function(event) {
-				// Create a new path and give it a stroke color:
-				path = new Path();
-				path.strokeColor = '#00000';
-
-				// Add a segment to the path where
-				// you clicked:
-				if(event.point.x < xMax && event.point.y < yMax && event.point.x > xMin && event.point.y > yMin)
-					path.add(event.point);
-
-				//path.position = new Point(500, 500);
-			}
-
-			tool.onMouseDrag = function(event) {
-				// Every drag event, add a segment
-				// to the path at the position of the mouse:
-				if(event.point.x < xMax && event.point.y < yMax && event.point.x > xMin && event.point.y > yMin)
-					path.add(event.point);
-
-				//path.position = new Point(500, 500);
-
-			}
-
-			tool.onMouseUp = function(event){
-				path.smooth();
-				tempPaths.push(path);
-			}
-
-			function addPath() {
-				
-				for(i = 0; i < tempPaths.length; i++){
-					compoundPath.addChild(tempPaths[i]);
-					//tempPaths[i].translate(new Point(300, 300));
-					//tempPaths[i].visible = true;
-				}
-				tempPaths = [];
-			}
-
-			function drawWindow(width, height, positionx, positiony){
-				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-			//	view.viewSize.width = width;
-			//	view.viewSize.height = height;
-				drawingWindow.strokeColor = 'blue';
-				drawingWindow.strokeWidth = 2;
-
-				xMin = positionx;
-				xMax = positionx + width;
-				yMin = positiony;
-				yMax = positiony + height;
-			}
-
-			function savedWindow(width, height, positionx, positiony){
-				var symWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-				var text = new PointText(new Point(positionx, positiony - 20));
-				text.fillColor = 'black';
-				text.justification = 'left';
-				text.fontSize = '36px';
-				text.content = "Saved Symmetries";
-				symWindow.strokeColor = 'blue';
-				symWindow.strokeWidth = 2;
-			}
-
-			drawWindow(700, 500, 1000, 150);
-			savedWindow(850, 150, 850, 750);
-
-			var group1 = new Group();
-			var groupF = new Group();
-			var groupR = new Group();
-			var groupFR = new Group();
-			var groupFRR = new Group();
-			var groupRR = new Group();
-
-			var symOrder = [];
-			var symmetrySymbols = {};
-			symmetrySymbols['1'] = group1;
-			symmetrySymbols['F'] = groupF;
-			symmetrySymbols['R'] = groupR;
-			symmetrySymbols['FR'] = groupFR;
-			symmetrySymbols['FRR'] = groupFRR;
-			symmetrySymbols['RR'] = groupRR;
-
-			var positionsX = [000, 200, 400, 600, 800, 1000];
-			
-			
-			
-
-			var lockData = {pos: new Point(880, 825), rad: 20};
-
-			Array.prototype.contains = function(element)					//added function to arrays that checks if something is in it or not
-			{
-				var isIn = false;
-
-				for(i = 0; i < this.length; i++)
-				{
-					if(this[i] === element){
-						isIn = true;
-						break;
-					}
-				}
-				return isIn;
-			}
-
-			function replaceAll(String, oldString, newString){				//function doesn't exist in javascript so i made it for convenience
-					return String.replace(new RegExp(oldString, 'g'), newString); 
-			}																//replaces all instances of oldstring with newstring
-
-			function Simplify(Resultant){
-				var Temp;
-				while(true){
-					Temp = Resultant;										//stores the original "unsimplified" state 
-					
-					Resultant = replaceAll(Resultant, "undefined", '1');	//uses associativity to replace substrings until it cannot be changed anymore
-													//i wish there was a better way
-					Resultant = replaceAll(Resultant, '1', "");				//"continue" statement goes back to top of loop
-					
-					Resultant = replaceAll(Resultant, "FF", '1');
-					
-					Resultant = replaceAll(Resultant , "RFR", 'F');
-					
-					Resultant = replaceAll(Resultant, "RF" , 'FRR');
-					
-					Resultant = replaceAll(Resultant, 'FRF', 'RR');
-					
-					Resultant = replaceAll(Resultant, 'RRR', '1');
-					
-					if(Resultant === Temp)									//if it hasn't been altered this loop then stop trying
-						break;
-				}	
-
-				if(Resultant === ''){													
-					Resultant = '1';
-				}
-
-				return Resultant;
-			}
-
-			function lockSym()
-			{
-<<<<<<< HEAD
-				if(symOrder.contains(myTri.symmetry.string) === false){
-					console.log(myTri.symmetry.string);
-					var ntri = new symTri((lockData.pos), lockData.rad);
-					ntri.timeBound = false;
-					ntri.setSym(myTri.symmetry.string, true);
-					ntri.textOne.scale(2/3);
-					ntri.textTwo.scale(2/3);
-					ntri.textThree.scale(2/3);
-
-=======
-				//console.log(myTri.symmetry.string);
-				var ntri = new symTri(lockData.pos, lockData.rad);
-				ntri.timeBound = false;
-				ntri.setSym(myTri.symmetry.string, true);
-				ntri.textOne.scale(2/3);
-				ntri.textTwo.scale(2/3);
-				ntri.textThree.scale(2/3);
->>>>>>> 289894059f909d5661063630ae3e5325d96f380b
-				//ntri.symmetry.current = myTri.symmetry.string.length;
-				
-					ntri.setState();
-
-					triVec.push(ntri);
-					symOrder.push(myTri.symmetry.string);
-				}
-
-				//console.log(ntri.symmetry.current);
-
-				addPath();
-
-				compoundPath.scale(1/4);
-
-				
-
-				symmetrySymbols[Simplify(myTri.symmetry.string)].removeChildren();
-				symmetrySymbols[Simplify(myTri.symmetry.string)] = compoundPath.clone();
-				symmetrySymbols[Simplify(myTri.symmetry.string)].position = new Point(830 + 140 * (symOrder.indexOf(myTri.symmetry.string) + 1), lockData.pos.y);
-
-				compoundPath.removeChildren();
-
-				lockData.pos.x += 140;
-
-				
-				//symVector.push(newTri);
-
-				//symVector[0].moveTri(0, 500);
-
-				//console.log(newTri.myTriangle.position);
-				resetTri();
-			}
-			
-		function toPlayground() {
-			window.location.href = "Playground.html"
-		}
-
-		//addButton("#bodyid", "Clear", "Path", 0, 1407, "btn-lg", addPath);
 		
-		
-
-			
-
-			addButton("#bodyid", "Flip", "Flip", 50, 300, "btn-md",but2f);
-			addButton("#bodyid", "Rotate", "Rotate", 50, 500, "btn-md",but1f);
-			addButton("#bodyid", "Reset", "Reset", 50, 800, "btn-md", resetTri);
+			addButton("#bodyid", "Flip", "Flip", 50, 1300, "btn-md",but2f);
+			addButton("#bodyid", "Rotate", "Rotate", 50, 1500, "btn-md",but1f);
+			addButton("#bodyid", "Reset", "Reset", 50, 1800, "btn-md", resetTri);
 			//addButton("#bodyid", "Check", "Check", 1000, 1700, "btn-md",toMenu);
-			//addButton("#bodyid", "Menu", "Menu", 1600, 700, "btn-lg", toMenu);
-			addButton("#bodyid", "Next", "Next",  350, 800, "btn-md", toMenu);
-			addButton("#bodyid", "Lock and Name", "Lock", 1000, 50, "btn-md", lockSym);
-
-
+			addButton("#bodyid", "Menu", "Menu", 1600, 1700, "btn-lg", toMenu);
+			addButton("#bodyid", "Next", "Next",  350, 1800, "btn-md", toMenu);
+			addButton("#bodyid", "Lock and Name", "Lock", 1000, 1000, "btn-md", lockSym);
 			//alert("here");
 			
 		</script>
