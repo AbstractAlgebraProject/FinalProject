@@ -306,11 +306,7 @@
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
 					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 							
-							//alert(this.Quads[0].segments[0].point.x);
 
-
-					        //this.Quads[0].segments[0].point.x = this.lVertex.point.x;
-					        //this.Quads[0].segments[3].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
 							this.Quads[1].segments[0].point.x =	this.rVertex.point.x;
 					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
 
@@ -330,10 +326,7 @@
 					           	this.currentFrame = 0; 
 					           	this.setState();
 
-					           	//this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
-
-
-					           	//this.Quads.splice(1, 0, this.Quads.splice(0, 1)[0]);
+	
 					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
 								//alert(this.quadFlipCorner);
 								if(this.quadFlipCorner[0] === 1){
@@ -342,12 +335,7 @@
 								else{
 									this.quadFlipCorner = [1,3,1,3];
 								}
-								//console.log(this.botCenter);
-								//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
-							
-								//alert(this.halfBotLength);
-								//alert(this.quadFlipCorner);
-
+				
 					           	this.findPointsToFlip();
 						    }
 			                
@@ -535,6 +523,8 @@
 				//alert(Math.cos(ang));
 				return retpoint;
 			}
+
+			
 			
 			
 		    function pText(point, icont, color, scale) { //constructor function for text located on a point
@@ -571,14 +561,29 @@
 
 	      	var tool = new Tool();
 	      	var rotatePoint = new Path.Circle(myTri.center, 5);
+	      	var flipd=0;
 
 	      	tool.onMouseDown = function(event){
-
-	      		rotatePoint.position = event.point;
-	      		rotatePoint.strokeColor = 'black';
-	      		rotatePoint.fillColor ='blue';
+	      		if(rotatePoint) {
+	      			flipPoint.position = event.point;
+	      			flipPoint.strokeColor = 'black';
+	      			flipPoint.fillColor = 'blue';
+	      			var slope = (rotatePoint.y-flipPoint.y)/(rotatePoint.x/flipPoint.x);
+	      			var intercept = flipPoint.y - flipPoint.x*slope;
+	      			flipd = (flipPoint.x + (flipPoint.y - intercept)*slope)/(1+slope*slope);
+	      		} else {
+	      			rotatePoint.position = event.point;
+	      			rotatePoint.strokeColor = 'black';
+	      			rotatePoint.fillColor ='blue';
+	      		}
+	      		
 
 	      	}
+
+	      	function reflectPoints(pointa)
+			{
+				var npoint = new Point(2*flipd-pointa.x, 2*flipd*slope - pointa.y + 2*intercept)
+			}
 
 	     
 	      	
@@ -605,6 +610,8 @@
 			function rsiz() 
 			{
 				myTri.resizeTri(.7);
+				flipPoint = null;
+				rotatePoint = null;
 			}
 
 			function resetTri(){
@@ -640,6 +647,7 @@
 		
 			
 			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
+			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
 
