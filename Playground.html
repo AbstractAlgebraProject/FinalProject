@@ -271,47 +271,19 @@
 				       	    var increment = Math.PI/(60*this.speed);
 
 			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
-							//alert (pointVal);
 
 
-
-							//alert (this.halfBotLength);
+                            //finding slope and intercept
                             var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
 
-					        this.lVertex.point = reflectPoint(this.lVertex.point, flipInfo);
-					        this.rVertex.point = reflectPoint(this.lVertex.point, flipInfo);
-
-
-							//alert (this.halfBotLength);
-                            this.Quads[0].segments[0].point = reflectPoint(this.Quads[0].segments[0].point, flipInfo);
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point, flipInfo);
-
-
-							this.Quads[1].segments[0].point =	reflectPoint(this.Quads[1].segments[0].point, flipInfo);
-					        this.Quads[1].segments[1].point = reflectPoint(this.Quads[1].segments[1].point, flipInfo);
-
-					        this.Quads[1].segments[0].point = reflectPoint(this.Quads[1].segments[0].point, flipInfo);
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point = reflectPoint(this.Quads[1].segments[this.quadFlipCorner[1]].point, flipInfo);
-
-
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[2]].point, flipInfo);
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[3]].point, flipInfo);
-
-                            /*
-							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-
-
-							this.Quads[1].segments[0].point.x =	this.rVertex.point.x;
-					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-
-					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-
-
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-                            */
+                            //iterating through all points and flipping
+                            for (i = 0; i < 3; i++)
+                            {
+                                for (k = 0; k < 4; k++)
+                                {
+                                    this.Quads[i].segments[k].point = reflectPoint(this.Quads[i].segments[k].point, flipInfo);
+                                }
+                            }
 
 
 				            this.currentFrame++;
@@ -563,36 +535,26 @@
             flipLine.fillColor = 'green';
             var whichpoint = false;
 
-            var flippedpoint1 = new Path.Circle(200, 200, 10);
-            flippedpoint1.strokeColor = 'black';
-            flippedpoint1.fillColor = 'green';
-
-            var flippedpoint2 = new Path.Circle(800, 800, 10);
-            flippedpoint2.strokeColor = 'black';
-            flippedpoint2.fillColor = 'cyan';
-
 	      	tool.onMouseDown = function(event){
 	      		if(whichpoint) {
 	      			flipPoint.position = event.point;
                     whichpoint = !whichpoint;
 	      		} else {
 	      			rotatePoint.position = event.point;
-
                     whichpoint = !whichpoint;
 	      		}
-                flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
                 flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
 	      	}
 
-            function findFlipInfo(pointa, pointb) {
+            function findFlipInfo(pointa, pointb) { //calculate slope and intercept for two points
                 var slope = (pointb.y-pointa.y)/(pointb.x-pointa.x);
                 var intercept = pointb.y - (pointb.x*slope);
                 return {"slope" : slope, "intercept" : intercept}
             }
-	      	function reflectPoint(pointa, flipinfo)
+	      	function reflectPoint(pointa, flipinfo) //calculate reflection based on slope and intercept and point to reflect
 			{
-                flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));
-				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}
+                flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));       //weird equation constant
+				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}    //finding the x and y
                 return p;
 			}
 
