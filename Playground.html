@@ -264,7 +264,7 @@
 					}
 	        	}
 
-	        	this.Update = function(event) {
+	        	this.Update = function(event, pointa, pointb) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
 
@@ -276,25 +276,27 @@
 
 
 							//alert (this.halfBotLength);
+                            var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
+                            console.log("FLIPFO " + JSON.stringify(flipInfo));
 
-					        this.lVertex.point.x = reflectPoint(this.lVertex.point.x);
-					        this.rVertex.point.x = reflectPoint(this.lVertex.point.x);
+					        this.lVertex.point = reflectPoint(this.lVertex.point, flipInfo);
+					        this.rVertex.point = reflectPoint(this.lVertex.point, flipInfo);
 
 
 							//alert (this.halfBotLength);
-                            this.Quads[0].segments[0].point.x = reflectPoint(this.Quads[0].segments[0].point.x);
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point.x);
+                            this.Quads[0].segments[0].point = reflectPoint(this.Quads[0].segments[0].point, flipInfo);
+					        this.Quads[0].segments[this.quadFlipCorner[0]].point = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point, flipInfo);
 
 
-							this.Quads[1].segments[0].point.x =	reflectPoint(this.Quads[1].segments[0].point.x);
-					        this.Quads[1].segments[1].point.x = reflectPoint(this.Quads[1].segments[1].point.x);
+							this.Quads[1].segments[0].point =	reflectPoint(this.Quads[1].segments[0].point, flipInfo);
+					        this.Quads[1].segments[1].point = reflectPoint(this.Quads[1].segments[1].point, flipInfo);
 
-					        this.Quads[1].segments[0].point.x = reflectPoint(this.Quads[1].segments[0].point.x);
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = reflectPoint(this.Quads[1].segments[this.quadFlipCorner[1]].point.x);
+					        this.Quads[1].segments[0].point = reflectPoint(this.Quads[1].segments[0].point, flipInfo);
+					        this.Quads[1].segments[this.quadFlipCorner[1]].point = reflectPoint(this.Quads[1].segments[this.quadFlipCorner[1]].point, flipInfo);
 
 
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[2]].point.x);
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[3]].point.x);
+					        this.Quads[2].segments[this.quadFlipCorner[2]].point = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[2]].point, flipInfo);
+					        this.Quads[2].segments[this.quadFlipCorner[3]].point = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[3]].point, flipInfo);
 
                             /*
 							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
@@ -556,34 +558,49 @@
             var flipPoint = new Path.Circle(myTri.center, 5);
             flipPoint.strokeColor = 'black';
             flipPoint.fillColor = 'blue';
-	      	var flipd, slope, intercept = 0;
 
-            var flipLine = new Path.Line(rotatePoint, flipPoint);
+            var flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
             flipLine.strokeColor = 'black';
             flipLine.fillColor = 'green';
             var whichpoint = false;
 
+            var flippedpoint1 = new Path.Circle(800, 800, 10);
+            flippedpoint1.strokeColor = 'black';
+            flippedpoint1.fillColor = 'green';
+
+            var flippedpoint2 = new Path.Circle(800, 800, 10);
+            flippedpoint2.strokeColor = 'black';
+            flippedpoint2.fillColor = 'cyan';
+
 	      	tool.onMouseDown = function(event){
 	      		if(whichpoint) {
 	      			flipPoint.position = event.point;
-
-	      			slope = (rotatePoint.y-flipPoint.y)/(rotatePoint.x/flipPoint.x);
-	      			intercept = flipPoint.y - flipPoint.x*slope;
-	      			flipd = (flipPoint.x + (flipPoint.y - intercept)*slope)/(1+slope*slope);
                     whichpoint = !whichpoint;
 	      		} else {
 	      			rotatePoint.position = event.point;
 
                     whichpoint = !whichpoint;
 	      		}
-
-                flipLine.from = rotatePoint;
-                flipLine.to = flipPoint;
+                flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
+                flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
 	      	}
 
-	      	function reflectPoint(pointa)
+            function findFlipInfo(pointa, pointb) {
+                console.log("LKJSD:LFKJS:LDKFJ");
+                console.log(pointa.x + ", " + pointa.y);
+                console.log(pointb.x + ", " + pointb.y);
+                var slope = (pointb.y-pointa.y)/(pointb.x-pointa.x);
+                var intercept = pointa.y - pointb.x*slope;
+                var flipd = (pointb.x + (pointb.y - intercept)*slope)/(1+slope*slope);
+                console.log(slope + " " + intercept + " " + flipd);
+                return {"slope" : slope, "intercept" : intercept, "flipd" : flipd}
+            }
+	      	function reflectPoint(pointa, flipinfo)
 			{
-				return new Point(2*flipd-pointa.x, 2*flipd*slope - pointa.y + 2*intercept);
+
+				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}
+                console.log("Hello " + p.x + ", " + p.y)
+                return p;
 			}
 
 	      	function but1f() {	//function for rotation button press
