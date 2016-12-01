@@ -220,11 +220,17 @@
 					//this.totalAngle += angle;
 
 	        		this.myTriangle.rotate(angle, rotatePoint);
+
+	        		this.myTriangle.rotate(120, rotatePoint);
 					for (i = 0; i < 3; i++)
 					{
 						for (k = 0; k < 4; k++)
 						{
+
 							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -angle * Math.PI / 180);
+
+							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -120 * Math.PI / 180);
+
 							//alert ( (-Math.PI) / (90 * this.speed) );
 						}
 					}
@@ -273,7 +279,7 @@
 					}
 	        	}
 
-	        	this.Update = function(event) {
+	        	this.Update = function(event, pointa, pointb) {
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
 
@@ -286,6 +292,7 @@
 
 							//alert (this.halfBotLength);
 
+
 					        this.lVertex.point.x = reflectPoint(this.lVertex.point.x);
 					        this.rVertex.point.x = reflectPoint(this.lVertex.point.x);
 
@@ -293,33 +300,27 @@
 							//alert (this.halfBotLength);
                             this.Quads[0].segments[0].point.x = reflectPoint(this.Quads[0].segments[0].point.x);
 					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point.x);
-
+					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point.x);
+					        
 
 							this.Quads[1].segments[0].point.x =	reflectPoint(this.Quads[1].segments[0].point.x);
 					        this.Quads[1].segments[1].point.x = reflectPoint(this.Quads[1].segments[1].point.x);
+					        this.Quads[1].segments[2].point.x = reflectPoint(this.Quads[1].segments[2].point.x);
 
-					        this.Quads[1].segments[0].point.x = reflectPoint(this.Quads[1].segments[0].point.x);
 					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = reflectPoint(this.Quads[1].segments[this.quadFlipCorner[1]].point.x);
 
 
 					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[2]].point.x);
 					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[3]].point.x);
 
-                            /*
-							this.Quads[0].segments[0].point.x = pointVal * -this.halfBotLength + this.botCenter;
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
+                            var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
+                            console.log("FLIPFO " + JSON.stringify(flipInfo));
+
+					        this.lVertex.point = reflectPoint(this.lVertex.point, flipInfo);
+					        this.rVertex.point = reflectPoint(this.lVertex.point, flipInfo);
 
 
-							this.Quads[1].segments[0].point.x =	this.rVertex.point.x;
-					        this.Quads[1].segments[1].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-
-					        this.Quads[1].segments[0].point.x = pointVal * this.halfBotLength + this.botCenter;
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-
-
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = pointVal * this.halfBotLength/2 + this.botCenter;
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = pointVal * -this.halfBotLength/2 + this.botCenter;
-                            */
+						
 
 
 				            this.currentFrame++;
@@ -346,6 +347,7 @@
 				    	}
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
+
 							var angle = parseFloat(document.getElementById("angle").value);
 							this.speed = 60/angle;
 							this.totalAngle += angle;
@@ -360,6 +362,18 @@
 										//alert ( (-Math.PI) / (90 * this.speed) );
 									}
 								}
+
+							var angle = parseInt(document.getElementById("angle").value);
+				    		//alert(angle);
+
+							for (i = 0; i < 3; i++)
+							{
+								for (k = 0; k < 4; k++)
+								{
+									this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, new Point(rotatePoint.position), (-Math.PI) / (90 * this.speed) );
+									//alert ( (-Math.PI) / (90 * this.speed) );
+
+								}
 							}
 				    		
 				    		this.currentFrame++;
@@ -373,11 +387,15 @@
 				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 
 				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
+
 				    			while((this.totalAngle - 120) > 0){
 				    				alert(this.totalAngle);
 				    	  			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
 				    	  			this.totalAngle -= 120;
 				    			}
+
+				    			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+
 
 								//console.log(this.botCenter);
 				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
@@ -419,6 +437,7 @@
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 		    	}
+		    }
 				this.reset = function() {
 
 					this.setSym("", true);
@@ -578,37 +597,57 @@
             flipPoint.fillColor = 'blue';
 	      	var flipd, slope, intercept = 0;
 
+         
+	      	
+
+           
+
             var flipLine = new Path();
             flipLine.add(rotatePoint.position);
             flipLine.add(flipPoint.position);
-
-
             flipLine.strokeColor = 'black';
 
-           // flipLine.fillColor = 'green';
             var whichpoint = false;
+
+            var flippedpoint1 = new Path.Circle(800, 800, 10);
+            flippedpoint1.strokeColor = 'black';
+            flippedpoint1.fillColor = 'green';
+
+            var flippedpoint2 = new Path.Circle(800, 800, 10);
+            flippedpoint2.strokeColor = 'black';
+            flippedpoint2.fillColor = 'cyan';
 
 	      	tool.onMouseDown = function(event){
 	      		if(whichpoint) {
 	      			flipPoint.position = event.point;
-
-	      			slope = (rotatePoint.y-flipPoint.y)/(rotatePoint.x/flipPoint.x);
-	      			intercept = flipPoint.y - flipPoint.x*slope;
-	      			flipd = (flipPoint.x + (flipPoint.y - intercept)*slope)/(1+slope*slope);
                     whichpoint = !whichpoint;
 	      		} else {
 	      			rotatePoint.position = event.point;
 
                     whichpoint = !whichpoint;
 	      		}
-
-                flipLine.segments[0].point = rotatePoint.position;
-                flipLine.segments[1].point = flipPoint.position;
+                flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
+               // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
+               	flipLine.segments[1].point = flipPoint.position;
+               	flipLine.segments[0].point = rotatePoint.position;
 	      	}
+            function findFlipInfo(pointa, pointb) {
+                console.log("LKJSD:LFKJS:LDKFJ");
+                console.log(pointa.x + ", " + pointa.y);
+                console.log(pointb.x + ", " + pointb.y);
+                var slope = (pointb.y-pointa.y)/(pointb.x-pointa.x);
+                var intercept = pointa.y - pointb.x*slope;
+                var flipd = (pointb.x + (pointb.y - intercept)*slope)/(1+slope*slope);
+                console.log(slope + " " + intercept + " " + flipd);
+                return {"slope" : slope, "intercept" : intercept, "flipd" : flipd};
+            }
 
-	      	function reflectPoint(pointa)
+	      	function reflectPoint(pointa, flipinfo)
 			{
-				return new Point(2*flipd-pointa.x, 2*flipd*slope - pointa.y + 2*intercept);
+
+				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)};
+                console.log("Hello " + p.x + ", " + p.y);
+                return p;
 			}
 
 	      	function but1f() {	//function for rotation button press
@@ -624,8 +663,8 @@
 			function rsiz()
 			{
 				myTri.resizeTri(.7);
-				flipPoint = null;
-				rotatePoint = null;
+				//flipPoint = null;
+				// = null;
 			}
 
 			function resetTri(){
