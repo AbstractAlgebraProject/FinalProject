@@ -387,15 +387,15 @@
 				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 
 				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
+				    			var index = 0;
 
-				    			while((this.totalAngle - 120) > 0){
-				    				alert(this.totalAngle);
-				    	  			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
-				    	  			this.totalAngle -= 120;
+				    			for(i = 0; i < 3; i++){
+				    				for(j = 0; j < 4; j++){
+				    					this.originPoints[index] = new Point(this.Quads[i].segments[j].point.x, this.Quads[i].segments[j].point.y);
+				    					index++;
+				    				}
 				    			}
-
-				    			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
-
+				    		
 
 								//console.log(this.botCenter);
 				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
@@ -620,6 +620,15 @@
                // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
                	flipLine.segments[1].point = flipPoint.position;
                	flipLine.segments[0].point = rotatePoint.position;
+
+               	var index = 0;
+
+               	for(i = 0; i < 3; i++){
+               		for(j = 0; j < 4; j++){
+               			myTri.originPoints[index] = new Point(myTri.Quads[i].segments[j].point.x, myTri.Quads[i].segments[j].point.y);
+               			index++;
+               		}
+               	}
                // flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
 	      	}
           
