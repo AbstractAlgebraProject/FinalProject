@@ -13,7 +13,6 @@
 		<script src="js/GUI.js"></script> <!---include gui -->
 		<script type="text/paperscript" canvas="myCanvas">
 
-
 			var c = document.getElementById("myCanvas");
 			var context = c.getContext("2d");
 			var width = $(document).width();
@@ -258,13 +257,12 @@
 	        	}
 	        	this.flip = function() {
 
-					//console.log("xxxSpotFlip");
 					this.findPointsToFlip();
 
 					this.Quads[0].segments[0].point.x = -this.halfBotLength + this.botCenter;
 					this.Quads[0].segments[this.quadFlipCorner[0]].point.x = -this.halfBotLength/2 + this.botCenter;
 
-					//alert(this.Quads[0].segments[0].point.x);
+
 
 					this.Quads[1].segments[0].point.x = this.halfBotLength + this.botCenter;
 					this.Quads[1].segments[this.quadFlipCorner[1]].point.x = this.halfBotLength/2 + this.botCenter;
@@ -280,7 +278,7 @@
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 
 					this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
-					//alert(this.quadFlipCorner);
+
 					if(this.quadFlipCorner[0] === 1){
 						this.quadFlipCorner = [3,1,3,1];
 					}
@@ -314,6 +312,7 @@
                                 }
                             }
 
+
 				            this.currentFrame++;
 				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
@@ -345,13 +344,15 @@
 
 
 				    	}
+
+
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
 
 							var angle = parseFloat(document.getElementById("angle").value);
 							this.speed = 60/angle;
 							this.totalAngle += angle;
-				    		alert(this.totalAngle);
+				    		//alert(this.totalAngle);
 
 							if(angle != 0){
 								for (i = 0; i < 3; i++)
@@ -359,23 +360,13 @@
 									for (k = 0; k < 4; k++)
 									{
 										this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, new Point(rotatePoint.position), (-Math.PI) / (90 * this.speed) );
-										//alert ( (-Math.PI) / (90 * this.speed) );
 									}
 								}
 
 							var angle = parseInt(document.getElementById("angle").value);
-				    		//alert(angle);
 
-							for (i = 0; i < 3; i++)
-							{
-								for (k = 0; k < 4; k++)
-								{
-									this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, new Point(rotatePoint.position), (-Math.PI) / (90 * this.speed) );
-									//alert ( (-Math.PI) / (90 * this.speed) );
+							
 
-								}
-							}
-				    		
 				    		this.currentFrame++;
 
 				    		if(this.currentFrame >= angle/4 * this.speed) {
@@ -398,13 +389,14 @@
 				    		
 
 								//console.log(this.botCenter);
-				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
+				    		
+
 
 				    			this.findPointsToFlip();
 
 				    		}
 
-				    		
+
 				    	}
 
 				    	 else {
@@ -597,8 +589,9 @@
             flipPoint.fillColor = 'blue';
 	      	var flipd, slope, intercept = 0;
 
-         
-	      	
+
+
+
 
 
             var flipLine = new Path();
@@ -650,6 +643,38 @@
                 return p;
 			}
 
+
+            function circleCollide(p1, p2, radius)
+            {
+                var diff = p1-p2;
+                if((Math.pow(diff.x, 2) + Math.pow(diff.y,2)) < Math.pow(radius,2)) {
+                    return 1;   //inside radius
+                } else {
+                    return 0;   //outside radius
+                }
+            }
+
+            function compareTris(t1, t2, radius)   //tris are in form [point1, point2, point3, center] ABC
+            {
+                var basesym = ["A", "B", "C"]
+                var rotatedsym = ["n", "n", "n"];
+                var translation = t2.center-t1.center;
+                var translated = t1;
+                for(p in translated)
+                {
+                    translated[p] -= translation;
+                }
+                //circle collision between translated triangle and t2 checking for symettries
+                for(i = 0; i < 9; i++) {
+                    if(circleCollide(translated[i%3], t2[i])) {
+                        rotatedsym[i%3] = basesym[i%3]
+                    }
+                }
+                if(rotatedsym.indexOf("n") < 0){return null;}else{return rotatedsym;}
+
+            }
+
+
 	      	function but1f() {	//function for rotation button press
 	      		myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
@@ -672,15 +697,46 @@
 			}
 
 
+            function makeBaseTri(radius) {
+                var tri = [];
+                var angle = 0;
+                for(i = 0; i < 2*Math.PI; i += 2*Math.PI/3)
+                {
+                    angle = i - (Math.PI/2);
+                    tri.push(new Point(Math.cos(angle)*radius, -Math.sin(angle)*radius));
+                }
+                tri.push(new Point(0, 0));
+                return tri;
+            }
 
-
+            var baseTri = makeBaseTri(myTri.radius);  //base triangle for comparing symettries
+            var realTri = [];           //store coordinates for defining points of dynamic triangle
+            var saveable = false;       //whether or not a drawing can be made and the symettry saved.
 			var lastLoop = new Date;	//fps calculation time
-
 	      	function onFrame(event) {
 	      		//fps calculations
 	      		var thisLoop = new Date;
 	      		var fps = 1000/(thisLoop-lastLoop);
 	      		lastLoop = thisLoop;
+
+                realTri = [];
+                for(var i = 0; i < 3; i++)
+                {
+                    realTri.push(myTri.Quads[i].segments[0].point);
+                }
+                realTri.push(myTri.center);
+                //console.log(realTri);
+                //console.log(baseTri);
+                //debugger;
+
+                var sym = compareTris(realTri, baseTri, 50);
+                if(sym) {   //triangle is a valid symettry
+                    //check if symettry is saved yet
+                    saveable = true;
+                } else {
+                    saveable = false;
+                }
+                console.log("THING" + saveable);
 
 	      		//updates fpsstring
 	      		//fpsText.content = fps;
@@ -690,7 +746,6 @@
 
 	      		//updates the time-bound triangle
 	      		myTri.Update(event);
-	      		//myTri2.Update(event);
 
 	      	}
 
