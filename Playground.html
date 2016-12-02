@@ -48,6 +48,7 @@
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
 				this.quadFlipCorner = [3,1,3,1];
+				this.originPoints = [];
 
 	        	this.speed = .5;
 	        	this.center = center;
@@ -82,7 +83,16 @@
 	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
 	        	this.rightQuad.closed = true;
 
+	        	var index = 0;
+	        	for(i = 0; i < 3; i++){
+	        		for(j = 0; j < 4; j++){
+	        			this.originPoints[index] = new Point(this.Quads[i].segments[j].point.x, this.Quads[i].segments[j].point.y);
+	        			console.log(index);
+	        				        			index++;
 
+	        			//console.log(this.Quads[i].segments[j].point.x);
+	        		}
+	        	}
 
 	        	//create text for vertex lettering
 	        	this.textOne = new PointText(this.myTriangle.segments[0].point);
@@ -285,51 +295,24 @@
 
 				       	    var increment = Math.PI/(60*this.speed);
 
-			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
+			         	   	var pointVal = (-Math.cos(increment*this.currentFrame) + 1)/2;
 
 			         	   	var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
-							//alert (this.halfBotLength);
-                            //finding slope and intercept
-                          /*  var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
+							
 
-
-					        this.lVertex.point.x = reflectPoint(this.lVertex.point.x);
-					        this.rVertex.point.x = reflectPoint(this.lVertex.point.x);
-
-
-							//alert (this.halfBotLength);
-                            this.Quads[0].segments[0].point.x = reflectPoint(this.Quads[0].segments[0].point.x);
-					        this.Quads[0].segments[this.quadFlipCorner[0]].point.x = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point.x);
-					        this.Quads[0].segments[this.quadFlipCorner[1]].point.x = reflectPoint(this.Quads[0].segments[this.quadFlipCorner[0]].point.x);
-					        
-
-							this.Quads[1].segments[0].point.x =	reflectPoint(this.Quads[1].segments[0].point.x);
-					        this.Quads[1].segments[1].point.x = reflectPoint(this.Quads[1].segments[1].point.x);
-					        this.Quads[1].segments[2].point.x = reflectPoint(this.Quads[1].segments[2].point.x);
-
-					        this.Quads[1].segments[this.quadFlipCorner[1]].point.x = reflectPoint(this.Quads[1].segments[this.quadFlipCorner[1]].point.x);
-
-
-					        this.Quads[2].segments[this.quadFlipCorner[2]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[2]].point.x);
-					        this.Quads[2].segments[this.quadFlipCorner[3]].point.x = reflectPoint(this.Quads[2].segments[this.quadFlipCorner[3]].point.x);
-
-                            var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
-                            console.log("FLIPFO " + JSON.stringify(flipInfo));
-
-					        this.lVertex.point = reflectPoint(this.lVertex.point, flipInfo);
-					        this.rVertex.point = reflectPoint(this.lVertex.point, flipInfo);
-*/
-
-						
+							var index = 0;
                             //iterating through all points and flipping
                             for (i = 0; i < 3; i++)
                             {
                                 for (k = 0; k < 4; k++)
                                 {
-                                    this.Quads[i].segments[k].point = reflectPoint(this.Quads[i].segments[k].point, flipInfo);
+                                    this.Quads[i].segments[k].point.x = this.originPoints[index].x + (reflectPoint(this.originPoints[index], flipInfo).x - this.originPoints[index].x) * pointVal;
+                                    this.Quads[i].segments[k].point.y = this.originPoints[index].y + (reflectPoint(this.originPoints[index], flipInfo).y - this.originPoints[index].y) * pointVal;
+
+                                    index++;
+                                    console.log(pointVal);
                                 }
                             }
-
 
 				            this.currentFrame++;
 				            if(this.currentFrame > 60*this.speed) {
@@ -340,6 +323,15 @@
 
 
 					           	this.Quads = [this.Quads[1], this.Quads[0], this.Quads[2]];
+
+					           	var index = 0;
+
+					           	for(i = 0; i < 3; i++){
+					           		for(j = 0; j < 4; j++){
+					           			this.originPoints[index] = new Point(this.Quads[i].segments[j].point.x, this.Quads[i].segments[j].point.y);
+					           			index++;
+					           		}
+					           	}
 								//alert(this.quadFlipCorner);
 								if(this.quadFlipCorner[0] === 1){
 									this.quadFlipCorner = [3,1,3,1];
