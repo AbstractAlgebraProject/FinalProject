@@ -286,15 +286,11 @@
 				       	    var increment = Math.PI/(60*this.speed);
 
 			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
-							//alert (pointVal);
 
-
-
+			         	   	var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
 							//alert (this.halfBotLength);
-<<<<<<< HEAD
-=======
-                            var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
->>>>>>> 11407894ebb24ba9b4aa4e73288758b42d774b32
+                            //finding slope and intercept
+                          /*  var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
 
 
 					        this.lVertex.point.x = reflectPoint(this.lVertex.point.x);
@@ -322,9 +318,17 @@
 
 					        this.lVertex.point = reflectPoint(this.lVertex.point, flipInfo);
 					        this.rVertex.point = reflectPoint(this.lVertex.point, flipInfo);
-
+*/
 
 						
+                            //iterating through all points and flipping
+                            for (i = 0; i < 3; i++)
+                            {
+                                for (k = 0; k < 4; k++)
+                                {
+                                    this.Quads[i].segments[k].point = reflectPoint(this.Quads[i].segments[k].point, flipInfo);
+                                }
+                            }
 
 
 				            this.currentFrame++;
@@ -382,7 +386,7 @@
 				    		
 				    		this.currentFrame++;
 
-				    		if(this.currentFrame >= angle/2 * this.speed) {
+				    		if(this.currentFrame >= angle/4 * this.speed) {
 				    			this.isRotate = false;
 				    			this.currentFrame = 0;
 				    			this.setState();
@@ -604,7 +608,6 @@
          
 	      	
 
-           
 
             var flipLine = new Path();
             flipLine.add(rotatePoint.position);
@@ -613,56 +616,36 @@
 
             var whichpoint = false;
 
-            var flippedpoint1 = new Path.Circle(200, 200, 10);
-            flippedpoint1.strokeColor = 'black';
-            flippedpoint1.fillColor = 'green';
-
-            var flippedpoint2 = new Path.Circle(800, 800, 10);
-            flippedpoint2.strokeColor = 'black';
-            flippedpoint2.fillColor = 'cyan';
-
 	      	tool.onMouseDown = function(event){
 	      		if(whichpoint) {
 	      			flipPoint.position = event.point;
                     whichpoint = !whichpoint;
 	      		} else {
 	      			rotatePoint.position = event.point;
-
                     whichpoint = !whichpoint;
 	      		}
-<<<<<<< HEAD
-                flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
+             //   flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
                // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
                	flipLine.segments[1].point = flipPoint.position;
                	flipLine.segments[0].point = rotatePoint.position;
-=======
-                flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
-                flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
->>>>>>> 11407894ebb24ba9b4aa4e73288758b42d774b32
+               // flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
 	      	}
-            function findFlipInfo(pointa, pointb) {
+          
+
+            function findFlipInfo(pointa, pointb) { //calculate slope and intercept for two points
                 var slope = (pointb.y-pointa.y)/(pointb.x-pointa.x);
-<<<<<<< HEAD
                 var intercept = pointa.y - pointb.x*slope;
                 var flipd = (pointb.x + (pointb.y - intercept)*slope)/(1+slope*slope);
-                console.log(slope + " " + intercept + " " + flipd);
-                return {"slope" : slope, "intercept" : intercept, "flipd" : flipd};
-=======
+               
                 var intercept = pointb.y - (pointb.x*slope);
                 return {"slope" : slope, "intercept" : intercept}
->>>>>>> 11407894ebb24ba9b4aa4e73288758b42d774b32
             }
 
-	      	function reflectPoint(pointa, flipinfo)
+	     
+	      	function reflectPoint(pointa, flipinfo) //calculate reflection based on slope and intercept and point to reflect
 			{
-<<<<<<< HEAD
-
-				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)};
-                console.log("Hello " + p.x + ", " + p.y);
-=======
-                flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));
-				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}
->>>>>>> 11407894ebb24ba9b4aa4e73288758b42d774b32
+                flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));       //weird equation constant
+				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}    //finding the x and y
                 return p;
 			}
 
