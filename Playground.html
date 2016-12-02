@@ -161,6 +161,7 @@
 		        this.isRotate = false;
 		        this.isFlip = false;
 	        	this.currentFrame = 0;
+	        	this.totalAngle = 0;
 
 	       		this.currentABC = "ABC";
 	       		this.symmetry = {string: "RRFRFRR", current: 0};
@@ -213,14 +214,23 @@
 	        	};
 
 	        	//non time-bound flip and rotate functions
+
 	        	this.rotate = function() {
+					var angle = parseInt(document.getElementById("angle").value);
+					//this.totalAngle += angle;
+
+	        		this.myTriangle.rotate(angle, rotatePoint);
 
 	        		this.myTriangle.rotate(120, rotatePoint);
 					for (i = 0; i < 3; i++)
 					{
 						for (k = 0; k < 4; k++)
 						{
+
+							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -angle * Math.PI / 180);
+
 							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -120 * Math.PI / 180);
+
 							//alert ( (-Math.PI) / (90 * this.speed) );
 						}
 					}
@@ -228,7 +238,12 @@
 	        		this.isRotate = false;
 
 				    this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
-					this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+				    while((this.totalAngle - 120) > 0){
+				    	//alert(this.totalAngle);
+						this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+						this.totalAngle -= 120;
+					}
+
 				    this.findPointsToFlip();
 	        	}
 	        	this.flip = function() {
@@ -273,7 +288,6 @@
 			         	   	var pointVal = -Math.cos(increment*this.currentFrame);
 
 
-                            //finding slope and intercept
                             var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
 
                             //iterating through all points and flipping
@@ -286,6 +300,7 @@
                             }
 
 
+					
 				            this.currentFrame++;
 				            if(this.currentFrame > 60*this.speed) {
 					           	this.isFlip = false;
@@ -310,6 +325,22 @@
 				    	}
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
+
+							var angle = parseFloat(document.getElementById("angle").value);
+							this.speed = 60/angle;
+							this.totalAngle += angle;
+				    		alert(this.totalAngle);
+
+							if(angle != 0){
+								for (i = 0; i < 3; i++)
+								{
+									for (k = 0; k < 4; k++)
+									{
+										this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, new Point(rotatePoint.position), (-Math.PI) / (90 * this.speed) );
+										//alert ( (-Math.PI) / (90 * this.speed) );
+									}
+								}
+
 							var angle = parseInt(document.getElementById("angle").value);
 				    		//alert(angle);
 
@@ -319,8 +350,10 @@
 								{
 									this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, new Point(rotatePoint.position), (-Math.PI) / (90 * this.speed) );
 									//alert ( (-Math.PI) / (90 * this.speed) );
+
 								}
 							}
+				    		
 				    		this.currentFrame++;
 
 				    		if(this.currentFrame >= angle/2 * this.speed) {
@@ -332,7 +365,15 @@
 				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 
 				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
+
+				    			while((this.totalAngle - 120) > 0){
+				    				alert(this.totalAngle);
+				    	  			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+				    	  			this.totalAngle -= 120;
+				    			}
+
 				    			this.Quads = [this.Quads[1], this.Quads[2], this.Quads[0]];
+
 
 								//console.log(this.botCenter);
 				    			//console.log(this.Quads[2].segments[0].point, this.Quads[2].segments[1].point, this.Quads[2].segments[2].point, this.Quads[2].segments[3].point);
@@ -340,6 +381,8 @@
 				    			this.findPointsToFlip();
 
 				    		}
+
+				    		
 				    	}
 
 				    	 else {
@@ -372,6 +415,7 @@
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 		    	}
+		    }
 				this.reset = function() {
 
 					this.setSym("", true);
@@ -529,10 +573,18 @@
             var flipPoint = new Path.Circle(myTri.center, 5);
             flipPoint.strokeColor = 'black';
             flipPoint.fillColor = 'blue';
+	      	var flipd, slope, intercept = 0;
 
-            var flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
+         
+	      	
+
+           
+
+            var flipLine = new Path();
+            flipLine.add(rotatePoint.position);
+            flipLine.add(flipPoint.position);
             flipLine.strokeColor = 'black';
-            flipLine.fillColor = 'green';
+
             var whichpoint = false;
 
 	      	tool.onMouseDown = function(event){
@@ -543,7 +595,8 @@
 	      			rotatePoint.position = event.point;
                     whichpoint = !whichpoint;
 	      		}
-                flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
+               	flipLine.segments[1].point = flipPoint.position;
+               	flipLine.segments[0].point = rotatePoint.position;
 	      	}
 
             function findFlipInfo(pointa, pointb) { //calculate slope and intercept for two points
@@ -551,6 +604,7 @@
                 var intercept = pointb.y - (pointb.x*slope);
                 return {"slope" : slope, "intercept" : intercept}
             }
+
 	      	function reflectPoint(pointa, flipinfo) //calculate reflection based on slope and intercept and point to reflect
 			{
                 flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));       //weird equation constant
@@ -571,8 +625,8 @@
 			function rsiz()
 			{
 				myTri.resizeTri(.7);
-				flipPoint = null;
-				rotatePoint = null;
+				//flipPoint = null;
+				// = null;
 			}
 
 			function resetTri(){
