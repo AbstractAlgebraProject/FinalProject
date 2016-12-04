@@ -49,6 +49,8 @@
 				this.quadFlipCorner = [3,1,3,1];
 				this.originPoints = [];
 
+				this.startingPoints = [];
+
 	        	this.speed = .5;
 	        	this.center = center;
 	        	this.radius = radius;
@@ -84,7 +86,10 @@
 
 	        	var index = 0;
 	        	for(i = 0; i < 3; i++){
+	        		this.startingPoints[i] = [];
 	        		for(j = 0; j < 4; j++){
+	        			this.startingPoints[i][j] = new Point(this.Quads[i].segments[j].point.x , this.Quads[i].segments[j].point.y);
+
 	        			this.originPoints[index] = new Point(this.Quads[i].segments[j].point.x, this.Quads[i].segments[j].point.y);
 	        			index++;
 
@@ -230,6 +235,7 @@
 	        		this.myTriangle.rotate(angle, rotatePoint);
 
 	        		this.myTriangle.rotate(120, rotatePoint);
+
 					for (i = 0; i < 3; i++)
 					{
 						for (k = 0; k < 4; k++)
@@ -237,7 +243,6 @@
 
 							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -angle * Math.PI / 180);
 
-							this.Quads[i].segments[k].point = rotatePoints(this.Quads[i].segments[k].point, rotatePoint, -120 * Math.PI / 180);
 
 							//alert ( (-Math.PI) / (90 * this.speed) );
 						}
@@ -343,7 +348,12 @@
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
 
+
 							var angle = parseFloat(document.getElementById("angle").value);
+							if(document.getElementById("angle").value.length === 0)
+								angle = 0;
+
+							console.log(parseFloat(document.getElementById("angle").value));
 							this.speed = 60/angle;
 							this.totalAngle += angle;
 				    		//alert(this.totalAngle);
@@ -676,7 +686,8 @@
 
 
 	      	function but1f() {	//function for rotation button press
-	      		myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
+	      		if(document.getElementById("angle").value.length > 0)
+	      			myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
 	      	}
 
@@ -695,6 +706,47 @@
 			function resetTri(){
 				myTri.reset();
 			}
+
+			var triVec = [];
+			var changeVectors = [];
+
+
+			function saveTri(){
+
+				var position = new Point(triVec.length * 100 + 100, 100);
+
+				var lockedTri = new symTri(position, 50);
+
+
+				for(i = 0; i < 3; i++){
+					changeVectors[i] = [];
+					for(j = 0; j < 4; j++){
+						changeVectors[i][j] = myTri.Quads[i].segments[j].point - myTri.startingPoints[i][j];
+					}
+				}
+
+				for(i = 0; i < 3; i++){
+					for(j = 0; j < 4; j++){
+						lockedTri.Quads[i].segments[j].point.x += (lockedTri.radius / myTri.radius) * changeVectors[i][j].x;
+						lockedTri.Quads[i].segments[j].point.y += (lockedTri.radius / myTri.radius) * changeVectors[i][j].y;
+
+					}
+				}
+
+				lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
+
+				console.log(position-lockedTri.center);
+				lockedTri.timeBound = false;
+				//lockedTri.setSym(myTri.symmetry.string, true);
+				lockedTri.textOne.scale(0);
+				lockedTri.textTwo.scale(0);
+				lockedTri.textThree.scale(0);
+
+				//lockedTri.setState();
+
+				triVec.push(lockedTri);
+			}
+
 
 
             function makeBaseTri(radius) {
@@ -743,7 +795,6 @@
                 }
 
                 console.log("SYM: " + sym);
-                //console.log("THING" + saveable);
 
 	      		//updates fpsstring
 	      		//fpsText.content = fps;
@@ -765,6 +816,8 @@
 			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
+			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+
 
 		</script>
 </head>
