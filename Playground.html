@@ -46,7 +46,7 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-				this.quadFlipCorner = [3,1,3,1];
+
 				this.originPoints = [];
 
 				this.startingPoints = [];
@@ -278,15 +278,8 @@
 
 					this.currentFrame = 0;
 
-					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 
 
-					if(this.quadFlipCorner[0] === 1){
-						this.quadFlipCorner = [3,1,3,1];
-					}
-					else{
-						this.quadFlipCorner = [1,3,1,3];
-					}
 	        	}
 
 	        	this.Update = function(event, pointa, pointb) {
@@ -322,6 +315,7 @@
 					           	this.currentFrame = 0;
 					           	this.setState();
 
+
 					           	var index = 0;
 
 					           	for(i = 0; i < 3; i++){
@@ -331,12 +325,7 @@
 					           		}
 					           	}
 								//alert(this.quadFlipCorner);
-								if(this.quadFlipCorner[0] === 1){
-									this.quadFlipCorner = [3,1,3,1];
-								}
-								else{
-									this.quadFlipCorner = [1,3,1,3];
-								}
+
 
 					           	this.findPointsToFlip();
 						    }
@@ -355,7 +344,7 @@
 
 							console.log(parseFloat(document.getElementById("angle").value));
 							this.speed = 60/angle;
-							this.totalAngle += angle;
+							//this.totalAngle += angle;
 				    		//alert(this.totalAngle);
 
 							if(angle != 0){
@@ -373,11 +362,11 @@
 
 				    		this.currentFrame++;
 
-				    		if(this.currentFrame >= angle/4 * this.speed) {
+				    		if(this.currentFrame >= angle/2 * this.speed) {
 				    			this.isRotate = false;
 				    			this.currentFrame = 0;
 				    			this.setState();
-				    			this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
+				    			//this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
 
 				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
 
