@@ -700,45 +700,60 @@
 			var changeVectors = [];
 
 
-			function saveTri(){
 
-				var position = new Point(triVec.length * 100 + 100, 100);
-
-				var lockedTri = new symTri(position, 50);
-
-
-				for(i = 0; i < 3; i++){
-					changeVectors[i] = [];
-					for(j = 0; j < 4; j++){
-						changeVectors[i][j] = myTri.Quads[i].segments[j].point - myTri.startingPoints[i][j];
+			function saveTri(sym){
+				function hasValue(json, v) {
+					for(i=0; i < json.length; i++) {
+						if(json[i].sym == v) {
+							return true;
+						}
 					}
+					return false;
 				}
+				if(!hasValue(triVec, sym) ) {
+					console.dir(triVec);
+					console.log("SYM: " + sym);
+					var position = new Point(triVec.length * 100 + 100, 100);
 
-				for(i = 0; i < 3; i++){
-					for(j = 0; j < 4; j++){
-						lockedTri.Quads[i].segments[j].point.x += (lockedTri.radius / myTri.radius) * changeVectors[i][j].x;
-						lockedTri.Quads[i].segments[j].point.y += (lockedTri.radius / myTri.radius) * changeVectors[i][j].y;
+					var lockedTri = new symTri(position, 50);
 
+
+					for(i = 0; i < 3; i++){
+						changeVectors[i] = [];
+						for(j = 0; j < 4; j++){
+							changeVectors[i][j] = myTri.Quads[i].segments[j].point - myTri.startingPoints[i][j];
+						}
 					}
+
+					for(i = 0; i < 3; i++){
+						for(j = 0; j < 4; j++){
+							lockedTri.Quads[i].segments[j].point.x += (lockedTri.radius / myTri.radius) * changeVectors[i][j].x;
+							lockedTri.Quads[i].segments[j].point.y += (lockedTri.radius / myTri.radius) * changeVectors[i][j].y;
+
+						}
+					}
+
+					lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
+
+					console.log(position-lockedTri.center);
+					lockedTri.timeBound = false;
+					//lockedTri.setSym(myTri.symmetry.string, true);
+					lockedTri.textOne.scale(0);
+					lockedTri.textTwo.scale(0);
+					lockedTri.textThree.scale(0);
+
+					//lockedTri.setState();
+
+					triVec.push({"tri" : lockedTri, "sym" : sym});
+				} else {
+					console.log(sym + " has already been saved!");
 				}
-
-				lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
-
-				console.log(position-lockedTri.center);
-				lockedTri.timeBound = false;
-				//lockedTri.setSym(myTri.symmetry.string, true);
-				lockedTri.textOne.scale(0);
-				lockedTri.textTwo.scale(0);
-				lockedTri.textThree.scale(0);
-
-				//lockedTri.setState();
-
-				triVec.push(lockedTri);
+				
 			}
 
 
 
-            function makeBaseTri(radius) {
+            function makeBaseTri(radius) {		//creating a triangle in known position to compare with
                 var tri = [];
                 var angle = 0;
                 for(i = 0; i < 2*Math.PI; i += 2*Math.PI/3)
@@ -756,6 +771,7 @@
             var saveable = false;       //whether or not a drawing can be made and the symettry saved.
 			var lastLoop = new Date;	//fps calculation time
             var lastsym = null;
+            var sym = "ABC";
 	      	function onFrame(event) {
 	      		//fps calculations
 	      		var thisLoop = new Date;
@@ -769,11 +785,8 @@
                 realTri.push(myTri.Quads[0].segments[2].point.clone());
                 realTri.push("A,B,C");
 
-                //console.log("REAL " + realTri);
-                var sym = compareTris(realTri, baseTriUp, 10);
 
-                //console.log("BASE " + baseTri);
-
+                sym = compareTris(realTri, baseTriUp, 10);
 
 
                 if(sym) {   //triangle is a valid symettry
@@ -783,7 +796,7 @@
                     saveable = false;
                 }
 
-                console.log("SYM: " + sym);
+                //console.log("SYM: " + sym);
 
 	      		//updates fpsstring
 	      		//fpsText.content = fps;
@@ -805,7 +818,8 @@
 			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
-			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri.bind(null, sym)); 
+				
 
 
 		</script>
