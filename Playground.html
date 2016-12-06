@@ -46,7 +46,7 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
-				
+
 				this.originPoints = [];
 
 				this.startingPoints = [];
@@ -282,7 +282,6 @@
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 
 
-					
 	        	}
 
 	        	this.Update = function(event, pointa, pointb) {
@@ -321,6 +320,7 @@
 
 					           	
 
+
 					           	var index = 0;
 
 					           	for(i = 0; i < 3; i++){
@@ -330,7 +330,7 @@
 					           		}
 					           	}
 								//alert(this.quadFlipCorner);
-								
+
 
 					           	this.findPointsToFlip();
 						    }
@@ -579,6 +579,7 @@
 
 
 	      	var tool = new Tool();
+	      	
 	      	var rotatePoint = new Path.Circle(myTri.center, 8);
             rotatePoint.strokeColor = 'black';
             rotatePoint.fillColor ='red';
@@ -599,29 +600,84 @@
 
             var whichpoint = false;
 
+			var path;
+			var tempPaths = [];
+			var compoundPath = new Group();
+			var symmetrySymbols = [];
+
+			function drawWindow(width, height, positionx, positiony){
+				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+		
+				drawingWindow.strokeColor = 'blue';
+				drawingWindow.strokeWidth = 2;
+
+				this.xMin = positionx;
+				this.xMax = positionx + width;
+				this.yMin = positiony;
+				this.yMax = positiony + height;
+			}
+
+			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
+
 	      	tool.onMouseDown = function(event){
-	      		if(whichpoint) {
-	      			flipPoint.position = event.point;
-                    whichpoint = !whichpoint;
-	      		} else {
-	      			rotatePoint.position = event.point;
-                    whichpoint = !whichpoint;
-	      		}
-             //   flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
-               // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
-               	flipLine.segments[1].point = flipPoint.position;
-               	flipLine.segments[0].point = rotatePoint.position;
+	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+	      			path = new Path();
 
-               	var index = 0;
+	      			path.strokeColor = '#00000';
+					path.add(event.point);
+				}
 
-               	for(i = 0; i < 3; i++){
-               		for(j = 0; j < 4; j++){
-               			myTri.originPoints[index] = new Point(myTri.Quads[i].segments[j].point.x, myTri.Quads[i].segments[j].point.y);
-               			index++;
-               		}
-               	}
+				else{
+		      		if(whichpoint) {
+		      			flipPoint.position = event.point;
+	                    whichpoint = !whichpoint;
+		      		} else {
+		      			rotatePoint.position = event.point;
+	                    whichpoint = !whichpoint;
+		      		}
+	             //   flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
+	               // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
+	               	flipLine.segments[1].point = flipPoint.position;
+	               	flipLine.segments[0].point = rotatePoint.position;
+
+	               	var index = 0;
+
+	               	for(i = 0; i < 3; i++){
+	               		for(j = 0; j < 4; j++){
+	               			myTri.originPoints[index] = new Point(myTri.Quads[i].segments[j].point.x, myTri.Quads[i].segments[j].point.y);
+	               			index++;
+	               		}
+	               	}
+               }
                // flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
 	      	}
+
+			tool.onMouseDrag = function(event) {
+				// Every drag event, add a segment
+				// to the path at the position of the mouse:
+				if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+					//console.log("something");
+					path.add(event.point);
+				}
+
+				//path.position = new Point(500, 500);
+
+			}
+
+			tool.onMouseUp = function(event){
+				//path.smooth();
+				tempPaths.push(path);
+			}
+
+			function addPath() {
+				
+				for(i = 0; i < tempPaths.length; i++){
+					compoundPath.addChild(tempPaths[i]);
+					//tempPaths[i].translate(new Point(300, 300));
+					//tempPaths[i].visible = true;
+				}
+				tempPaths = [];
+			}
 
 
             function findFlipInfo(pointa, pointb) { //calculate slope and intercept for two points
@@ -705,45 +761,73 @@
 			var changeVectors = [];
 
 
-			function saveTri(){
 
-				var position = new Point(triVec.length * 100 + 100, 100);
-
-				var lockedTri = new symTri(position, 50);
-
-
-				for(i = 0; i < 3; i++){
-					changeVectors[i] = [];
-					for(j = 0; j < 4; j++){
-						changeVectors[i][j] = myTri.Quads[i].segments[j].point - myTri.startingPoints[i][j];
+			function saveTri(sym){
+				function hasValue(json, v) {
+					for(i=0; i < json.length; i++) {
+						if(json[i].sym == v) {
+							return true;
+						}
 					}
+					return false;
+				}
+				if(!hasValue(triVec, sym) ) {
+					console.dir(triVec);
+					console.log("SYM: " + sym);
+					var position = new Point(triVec.length * 100 + 100, 100);
+
+					var lockedTri = new symTri(position, 50);
+
+
+					for(i = 0; i < 3; i++){
+						changeVectors[i] = [];
+						for(j = 0; j < 4; j++){
+							changeVectors[i][j] = myTri.Quads[i].segments[j].point - myTri.startingPoints[i][j];
+						}
+					}
+
+					for(i = 0; i < 3; i++){
+						for(j = 0; j < 4; j++){
+							lockedTri.Quads[i].segments[j].point.x += (lockedTri.radius / myTri.radius) * changeVectors[i][j].x;
+							lockedTri.Quads[i].segments[j].point.y += (lockedTri.radius / myTri.radius) * changeVectors[i][j].y;
+
+						}
+					}
+
+					lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
+
+					console.log(position-lockedTri.center);
+					lockedTri.timeBound = false;
+					//lockedTri.setSym(myTri.symmetry.string, true);
+					lockedTri.textOne.scale(0);
+					lockedTri.textTwo.scale(0);
+					lockedTri.textThree.scale(0);
+
+					//lockedTri.setState();
+
+					triVec.push({"tri" : lockedTri, "sym" : sym});
+
+					addPath();
+
+					compoundPath.scale(1/5);
+					compoundPath.position = new Point(triVec.length * 100, 200);	
+					symmetrySymbols.push(compoundPath.clone());
+					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);	
+
+					compoundPath.removeChildren();
+				} else {
+					console.log(sym + " has already been saved!");
 				}
 
-				for(i = 0; i < 3; i++){
-					for(j = 0; j < 4; j++){
-						lockedTri.Quads[i].segments[j].point.x += (lockedTri.radius / myTri.radius) * changeVectors[i][j].x;
-						lockedTri.Quads[i].segments[j].point.y += (lockedTri.radius / myTri.radius) * changeVectors[i][j].y;
 
-					}
-				}
-
-				lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
-
-				console.log(position-lockedTri.center);
-				lockedTri.timeBound = false;
-				//lockedTri.setSym(myTri.symmetry.string, true);
-				lockedTri.textOne.scale(0);
-				lockedTri.textTwo.scale(0);
-				lockedTri.textThree.scale(0);
-
-				//lockedTri.setState();
-
-				triVec.push(lockedTri);
+					
+				
+				
 			}
 
 
 
-            function makeBaseTri(radius) {
+            function makeBaseTri(radius) {		//creating a triangle in known position to compare with
                 var tri = [];
                 var angle = 0;
                 for(i = 0; i < 2*Math.PI; i += 2*Math.PI/3)
@@ -761,6 +845,7 @@
             var saveable = false;       //whether or not a drawing can be made and the symettry saved.
 			var lastLoop = new Date;	//fps calculation time
             var lastsym = null;
+            var sym = "ABC";
 	      	function onFrame(event) {
 	      		//fps calculations
 	      		var thisLoop = new Date;
@@ -774,11 +859,8 @@
                 realTri.push(myTri.Quads[0].segments[2].point.clone());
                 realTri.push("A,B,C");
 
-                //console.log("REAL " + realTri);
-                var sym = compareTris(realTri, baseTriUp, 10);
 
-                //console.log("BASE " + baseTri);
-
+                sym = compareTris(realTri, baseTriUp, 10);
 
 
                 if(sym) {   //triangle is a valid symettry
@@ -788,7 +870,7 @@
                     saveable = false;
                 }
 
-                console.log("SYM: " + sym);
+                //console.log("SYM: " + sym);
 
 	      		//updates fpsstring
 	      		//fpsText.content = fps;
@@ -801,6 +883,8 @@
 
 	      	}
 
+			
+
 			function toMenu() {
 				window.location.href = "Index.html";
 			}
@@ -810,7 +894,8 @@
 			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
-			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri.bind(null, sym)); 
+				
 
 
 		</script>
