@@ -701,10 +701,20 @@
 
 
 
-			function saveTri(sym){
-				function hasValue(json, v) {
-					for(i=0; i < json.length; i++) {
-						if(json[i].sym == v) {
+			function saveTri(){
+				function hasValue(arr, v) {
+					for(i=0; i < arr.length; i++) {
+                        function arraysEqual(a, b) {
+                            if (a === b) return true;
+                            if (a == null || b == null) return false;
+                            if (a.length != b.length) return false;
+
+                            for (var i = 0; i < a.length; ++i) {
+                                if (a[i] !== b[i]) return false;
+                            }
+                          return true;
+                        }
+						if(arraysEqual(arr[i].sym, v)) {
 							return true;
 						}
 					}
@@ -712,7 +722,6 @@
 				}
 				if(!hasValue(triVec, sym) ) {
 					console.dir(triVec);
-					console.log("SYM: " + sym);
 					var position = new Point(triVec.length * 100 + 100, 100);
 
 					var lockedTri = new symTri(position, 50);
@@ -748,7 +757,7 @@
 				} else {
 					console.log(sym + " has already been saved!");
 				}
-				
+
 			}
 
 
@@ -788,16 +797,6 @@
 
                 sym = compareTris(realTri, baseTriUp, 10);
 
-
-                if(sym) {   //triangle is a valid symettry
-                    //check if symettry is saved yet
-                    saveable = true;
-                } else {
-                    saveable = false;
-                }
-
-                //console.log("SYM: " + sym);
-
 	      		//updates fpsstring
 	      		//fpsText.content = fps;
 
@@ -818,8 +817,8 @@
 			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
-			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri.bind(null, sym)); 
-				
+			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+
 
 
 		</script>
