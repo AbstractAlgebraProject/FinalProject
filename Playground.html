@@ -292,7 +292,7 @@
 
 			         	   	var pointVal = (-Math.cos(increment*this.currentFrame) + 1)/2;
 
-			         	   	var flipInfo = findFlipInfo(rotatePoint.position, flipPoint.position);
+			         	   	var flipInfo = findFlipInfo(flipPoint.position, flipPoint2.position);
 
 
 							var index = 0;
@@ -351,6 +351,9 @@
 							this.speed = 60/angle;
 							//this.totalAngle += angle;
 				    		//alert(this.totalAngle);
+				    		if(angle === 0){
+				    			this.isRotate= false;
+				    		}
 
 							if(angle != 0){
 								for (i = 0; i < 3; i++)
@@ -361,7 +364,7 @@
 									}
 								}
 
-							var angle = parseInt(document.getElementById("angle").value);
+							//var angle = parseInt(document.getElementById("angle").value);
 
 
 
@@ -568,8 +571,7 @@
 		    		dothis(event);
 		    	}
 		    }
-
-
+		   
 			var triData1 = {position: new Point(400,400), radius: 250};
 
 	      	var myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
@@ -586,6 +588,10 @@
             var flipPoint = new Path.Circle(myTri.center, 5);
             flipPoint.strokeColor = 'black';
             flipPoint.fillColor = 'blue';
+            var flipPoint2 = new Path.Circle(myTri.center, 5);
+            flipPoint2.strokeColor = 'black';
+            flipPoint2.fillColor ='blue';
+
 	      	var flipd, slope, intercept = 0;
 
 
@@ -594,8 +600,8 @@
 
 
             var flipLine = new Path();
-            flipLine.add(rotatePoint.position);
             flipLine.add(flipPoint.position);
+            flipLine.add(flipPoint2.position);
             flipLine.strokeColor = 'black';
 
             var whichpoint = false;
@@ -618,7 +624,7 @@
 			}
 
 			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
-
+			
 	      	tool.onMouseDown = function(event){
 	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
 	      			path = new Path();
@@ -626,8 +632,17 @@
 	      			path.strokeColor = '#00000';
 					path.add(event.point);
 				}
+				if(toolMode === "rotate"){
+					rotatePoint.position = event.point;
+				}
 
-				else{
+				else if(toolMode === "flip"){
+					flipPoint.position = event.point;
+					flipPoint2.position = event.point;
+					flipLine.segments[0].point = flipPoint.position;
+					flipLine.segments[1].point = flipPoint2.position;
+				}
+				/*else{
 		      		if(whichpoint) {
 		      			flipPoint.position = event.point;
 	                    whichpoint = !whichpoint;
@@ -648,7 +663,7 @@
 	               			index++;
 	               		}
 	               	}
-               }
+               }*/
                // flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
 	      	}
 
@@ -660,6 +675,13 @@
 					path.add(event.point);
 				}
 
+				else if (toolMode === 'flip'){
+					flipPoint2.position = event.point;
+
+
+	               	flipLine.segments[1].point = flipPoint.position;
+	               	flipLine.segments[0].point = flipPoint2.position;
+				}
 				//path.position = new Point(500, 500);
 
 			}
@@ -667,6 +689,7 @@
 			tool.onMouseUp = function(event){
 				//path.smooth();
 				tempPaths.push(path);
+
 			}
 
 			function addPath() {
@@ -734,15 +757,35 @@
 
             }
 
+            var toolMode = "";
+            var clicked = false;
 
 	      	function but1f() {	//function for rotation button press
-	      		if(document.getElementById("angle").value.length > 0)
-	      			myTri.setSym(myTri.symmetry.string + "R", false);	//appends "R" to the symmetry string
+	      		toolMode = "rotate";
+
+	      		if(clicked){
+	      			if(document.getElementById("angle").value.length > 0)
+	      			myTri.setSym(myTri.symmetry.string + "R", false);
+	      		}
+
+	      		clicked = !clicked;
+	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
 	      	}
 
 	      	function but2f() {	//function for flip button press
-	      		myTri.setSym(myTri.symmetry.string + "F", false);	//appends "F" to the symmetry string
+	      		toolMode = "flip";
+
+	      		if(flipPoint.position == flipPoint2.position && clicked === true){
+	      			alert("Your line is not long enough");
+	      		}
+	      		else if(clicked){
+	      			myTri.setSym(myTri.symmetry.string + "F", false);
+	      		}	//appends "F" to the symmetry string
+
+	      		if(!clicked){
+	      			clicked = true;
+	      		}
 	      		//alert(myTri.symmetry.string);
 	      	}
 
@@ -781,9 +824,9 @@
 					}
 					return false;
 				}
-				if(!hasValue(triVec, sym) ) {
+				if(!hasValue(triVec, sym) && tempPaths.length > 0) {
 					console.dir(triVec);
-					var position = new Point(triVec.length * 100 + 100, 100);
+					var position = new Point(triVec.length * 100 + 100, 3*height/4 - 50);
 
 					var lockedTri = new symTri(position, 50);
 
@@ -819,7 +862,7 @@
 					addPath();
 
 					compoundPath.scale(1/5);
-					compoundPath.position = new Point(triVec.length * 100, 200);	
+					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);	
 					symmetrySymbols.push(compoundPath.clone());
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);	
 
@@ -885,10 +928,11 @@
 
 
 			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
-			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
-			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
+			addButton('#bodyid', "Flip", "Flip", width/5, 6 * height / 16, "btn-md", but2f);
+			addButton("#bodyid", "Menu", "Menu", width - 300, height - 200, "btn-lg", toMenu);
 			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
 			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+
 
 
 
