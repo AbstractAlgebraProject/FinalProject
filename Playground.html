@@ -46,6 +46,9 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+	        	this.topQuad.name = "top";
+	        	this.leftQuad.name = "left";
+	        	this.rightQuad.name = "right";
 
 				this.originPoints = [];
 
@@ -572,10 +575,24 @@
 
 			var triData1 = {position: new Point(400,400), radius: 250};
 
-	      	var myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
+			var myTri = null;
+			function resetMyTri() {
+				if(myTri) {
+					myTri.topQuad.remove();
+					myTri.rightQuad.remove();
+					myTri.leftQuad.remove();
+					myTri.textOne.remove();
+					myTri.textTwo.remove();
+					myTri.textThree.remove();
+				}
 
-	      	myTri.setSym("", true);	//sets symmetry to empty
-	      	myTri.setState();		//sets initial state
+				myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
+
+	      		myTri.setSym("", true);	//sets symmetry to empty
+	      		myTri.setState();		//sets initial state
+			}
+
+			resetMyTri();
 
 
 	      	var tool = new Tool();
@@ -587,10 +604,6 @@
             flipPoint.strokeColor = 'black';
             flipPoint.fillColor = 'blue';
 	      	var flipd, slope, intercept = 0;
-
-
-
-
 
 
             var flipLine = new Path();
@@ -753,10 +766,6 @@
 				// = null;
 			}
 
-			function resetTri(){
-				myTri.reset();
-			}
-
 			var triVec = [];
 			var changeVectors = [];
 
@@ -887,7 +896,7 @@
 			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
 			addButton('#bodyid', "Flip", "Flip", width/5, height/3, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", 1600, 1300, "btn-lg", toMenu);
-			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
+			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetMyTri);
 			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
 
 
