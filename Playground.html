@@ -281,7 +281,7 @@
 
 					this.currentFrame = 0;
 
-					
+
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 
 
@@ -308,7 +308,6 @@
                                     this.Quads[i].segments[k].point.y = this.originPoints[index].y + (reflectPoint(this.originPoints[index], flipInfo).y - this.originPoints[index].y) * pointVal;
 
                                     index++;
-                                    console.log(pointVal);
                                 }
                             }
 
@@ -321,7 +320,7 @@
 					           	this.setState();
 					           	this.center = this.Quads[0].segments[2].point;
 
-					           	
+
 
 
 					           	var index = 0;
@@ -567,39 +566,49 @@
 		    	this.button.fillColor = baseColor;
 		    	this.baseColor = baseColor;
 
-		    	this.offset = new Point(size.x/2, size.y/2);
-		    	this.text = new pText(point-this.offset, textStr, textColor, 4);
+		    	var boffset = new Point(size.width/2, size.height/2);
+
+		    	this.text = new pText(point+boffset, textStr, textColor, 4);
+                var toffset = new Point(this.text.bounds.width/2, this.text.bounds.width/2);
+
+                this.bgroup = new Group([this.button, this.text])
+                //this.button.text.position = this.button.text.position + toffset;
 
 		    	var dothis = callback;
 
 		    	this.flashing = false;
 		    	this.flashstart = null;
 		    	this.colordiff = null;
-		    	this.flashToggle =  function(color, length) {
+                this.setupFlash = function (color, length) {
+                    this.flashColor = color;
+                    this.flashLength = (2*Math.PI) / (length*1000);
+                }
+		    	this.flashToggle =  function() {
 		    		this.flashing = !this.flashing;
-		    		if(this.flashing) {
-		    			this.flashColor = color;
-		    			this.flashLength = (2*Math.PI) / (length*1000);
-		    		}
+
 		    		this.flashstart = Date.now();
 		    		this.colordiff = color-this.baseColor;
 		    	}
-		    	
+
 		    	this.doFlashColor = function() {
 		    		var amount = Math.abs(Math.cos((Date.now()-this.flashstart)*(this.flashLength)));
 		    		this.button.fillColor = this.baseColor + this.colordiff*amount;
 
 		    	}
-		    	this.button.onClick = function(event) {
+		    	this.bgroup.onClick = function(event) {
+                    if(this.flashColor != null && this.flashLength != null)
+                    {
+                        this.flashToggle();
+                    }
 		    		dothis(event);
 		    	}
-		    	this.button.onMouseEnter =  function(event) {
-		    		this.fillColor = hoverColor;
-		    		//this.text.fillColor = textHoverColor;
+		    	this.bgroup.onMouseEnter =  function(event) {
+		    		this.children[0].fillColor = hoverColor;
+                    this.children[1].fillColor = textHoverColor;
 		    	}
-		    	this.button.onMouseLeave = function(event) {
-		    		this.fillColor = baseColor;
-		    		//this.text.fillColor = textColor;
+		    	this.bgroup.onMouseLeave = function(event) {
+		    		this.children[0].fillColor = baseColor;
+                    this.children[1].fillColor = textColor;
 		    	}
 		    	this.update = function(event) {
 		    		if(this.flashing) {
@@ -607,7 +616,7 @@
 		    		}
 		    	}
 		    }
-		   
+
 			var triData1 = {position: new Point(400,400), radius: 250};
 
 			var myTri = null;
@@ -631,7 +640,7 @@
 
 
 	      	var tool = new Tool();
-	      	
+
 	      	var rotatePoint = new Path.Circle(myTri.center, 8);
             rotatePoint.strokeColor = 'black';
             rotatePoint.fillColor ='red';
@@ -659,7 +668,7 @@
 
 			function drawWindow(width, height, positionx, positiony){
 				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-		
+
 				drawingWindow.strokeColor = 'blue';
 				drawingWindow.strokeWidth = 2;
 
@@ -670,7 +679,7 @@
 			}
 
 			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
-			
+
 	      	tool.onMouseDown = function(event){
 	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
 	      			path = new Path();
@@ -688,7 +697,7 @@
 					flipLine.segments[0].point = flipPoint.position;
 					flipLine.segments[1].point = flipPoint2.position;
 				}
-				
+
 	      	}
 
 			tool.onMouseDrag = function(event) {
@@ -717,7 +726,7 @@
 			}
 
 			function addPath() {
-				
+
 				for(i = 0; i < tempPaths.length; i++){
 					compoundPath.addChild(tempPaths[i]);
 					//tempPaths[i].translate(new Point(300, 300));
@@ -882,9 +891,9 @@
 					addPath();
 
 					compoundPath.scale(1/5);
-					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);	
+					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);
 					symmetrySymbols.push(compoundPath.clone());
-					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);	
+					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
 
 					compoundPath.removeChildren();
 				} else {
@@ -914,9 +923,15 @@
             var lastsym = null;
             var sym = "ABC";
             //TODO
-            //function sButton(point, size, baseColor, hoverColor, textColor, textHoverColor, textStr, callback) {
-            //var testButton = new sButton(new Point(50, 50), new Point(300, 150), new Color("green"), new Color("black"), new Color("black"), new Color("green"), "testing", resetMyTri);
-            //testButton.flashToggle(new Color("red"), 2);
+
+            var buttonArray = [];
+            buttonArray.push(new sButton(new Point(width / 5, height / 2), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
+            buttonArray.push(new sButton(new Point(width/5, 6 * height / 16), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
+            buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
+            buttonArray.push(new sButton(new Point(width  / 5, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
+            buttonArray.push(new sButton(new Point(width  / 5, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
+
+
 	      	function onFrame(event) {
 	      		//fps calculations
 	      		var thisLoop = new Date;
@@ -940,23 +955,19 @@
 	      		//symText.content = myTri.symmetry.string + "\n" + myTri.symmetry.string.substring(0, myTri.symmetry.current);
 
 	      		//updates the time-bound triangle
-	      		testButton.update();
-	      		myTri.Update(event);
+                myTri.Update();
+	      		for(button in buttonArray) {
+                    buttonArray[button].update();
+                }
 
 	      	}
 
-			
+
 
 			function toMenu() {
 				window.location.href = "Index.html";
 			}
 
-
-			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
-			addButton('#bodyid', "Flip", "Flip", width/5, 6 * height / 16, "btn-md", but2f);
-			addButton("#bodyid", "Menu", "Menu", width - 300, height - 200, "btn-lg", toMenu);
-			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetMyTri);
-			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
 
 
 
