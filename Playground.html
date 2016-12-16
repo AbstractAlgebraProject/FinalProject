@@ -336,6 +336,7 @@
                                     this.Quads[i].segments[k].point.y = this.originPoints[index].y + (reflectPoint(this.originPoints[index], flipInfo).y - this.originPoints[index].y) * pointVal;
 
                                     index++;
+
                                 }
                             }
 
@@ -617,6 +618,7 @@
 		    	this.flashing = false;
 		    	this.flashstart = null;
 		    	this.colordiff = null;
+
                 this.setupFlash = function (color, length) {
                     this.flashColor = color;
                     this.flashLength = (2*Math.PI) / (length*1000);
@@ -656,6 +658,7 @@
 		    }
 
 			var triData1 = {position: new Point(400,400), radius: height/6};
+
 			var myTri = null;
 			function resetMyTri() {
 				if(myTri) {
@@ -724,6 +727,13 @@
 			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
 
 	      	tool.onMouseDown = function(event){
+	      		var temp = false;
+	      		for(button in buttonArray){
+	      			if(buttonArray[button].button.contains(event.point))
+	      				temp = true;
+	      		}
+
+	      		if(!temp){
 	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
 	      			path = new Path();
 
@@ -741,6 +751,9 @@
 					flipLine.segments[1].point = flipPoint2.position;
 				}
 
+				}
+
+
 	      	}
 
 			tool.onMouseDrag = function(event) {
@@ -755,8 +768,8 @@
 					flipPoint2.position = event.point;
 
 
-	               	flipLine.segments[1].point = flipPoint.position;
-	               	flipLine.segments[0].point = flipPoint2.position;
+	               	flipLine.segments[0].point = flipPoint.position;
+	               	flipLine.segments[1].point = flipPoint2.position;
 				}
 				//path.position = new Point(500, 500);
 
@@ -847,6 +860,7 @@
 	      		}
 	      		if(!clickedR){
 	      			clickedR = true;
+	      			clickedF = false;
 	     	    }
 	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
@@ -856,15 +870,17 @@
 	      		toolMode = "flip";
 				myTri.startTime = new Date().getTime();
 
-	      		if(flipPoint.position == flipPoint2.position && clicked === true){
+	      		if(flipPoint.position == flipPoint2.position && clickedF === true){
 	      			alert("Your line is not long enough");
 	      		}
-	      		else if(clickedR){
+
+	      		else if(clickedF){
 	      			myTri.setSym(myTri.symmetry.string + "F", false);
 	      		}	//appends "F" to the symmetry string
 
-	      		if(!clickedR){
-	      			clickedR = true;
+	      		if(!clickedF){
+	      			clickedF = true;
+	      			clickedR = false;
 	      		}
 	      		//alert(myTri.symmetry.string);
 	      	}
@@ -981,6 +997,7 @@
             buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
             buttonArray.push(new sButton(new Point(width  / 5, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
             buttonArray.push(new sButton(new Point(width  / 5, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
+            buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
 
 
 	      	function onFrame(event) {
