@@ -31,7 +31,7 @@
 			textBox.style.textAlign = "center";
 			textBox.style.width = 300 + "px";
 			textBox.style.height = 100 + "px";
-			textBox.style.left = width / 2 - 50 + "px";
+			textBox.style.left = width / 2 - 150 + "px";
 			textBox.style.top = 3 * height / 4 + "px";
 			textBox.style.fontSize = "20pt";
 			textBox.type = "text";
@@ -39,6 +39,20 @@
 			textBox.id = 'angle';
 
 			document.body.appendChild(textBox);
+
+			var descriptionBox = document.createElement("input");
+			descriptionBox.style.position = "absolute";
+			descriptionBox.style.textAlign = "center";
+			descriptionBox.style.width = width / 4 - 2 + "px";
+			descriptionBox.style.height = 100 + "px";
+			descriptionBox.style.left = 3 * width/4 + "px";
+			descriptionBox.style.top = height/2 + 10 + "px";
+			descriptionBox.style.fontSize = "20pt";
+			descriptionBox.type = "text";
+
+			descriptionBox.id = 'description';
+
+			document.body.appendChild(descriptionBox);
 
 	        function symTri(center, radius) {
 	        	this.myTriangle = new Path();
@@ -58,6 +72,13 @@
 	        	this.center = center;
 	        	this.radius = radius;
 	        	this.timeBound = true;
+	        	this.startTime;
+
+	        	this.moves = [];
+	        	this.flipMove = {slope: 0, intercept: new Point(0, 0)};
+	        	this.rotateMove = {point: new Point(0, 0), angle: 0};
+
+	        	this.description = "";
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
@@ -288,12 +309,19 @@
 	        	}
 
 	        	this.Update = function(event, pointa, pointb) {
+
+
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
+		        			var currentTime = new Date().getTime();
+
+		        			var difference = currentTime - this.startTime;
+
+		        			//console.log(difference);
 
 				       	    var increment = Math.PI/(60*this.speed);
 
-			         	   	var pointVal = (-Math.cos(increment*this.currentFrame) + 1)/2;
+			         	   	var pointVal = (-Math.cos(increment*difference/30) + 1)/2;
 
 			         	   	var flipInfo = findFlipInfo(flipPoint.position, flipPoint2.position);
 
@@ -313,7 +341,7 @@
 
 
 				            this.currentFrame++;
-				            if(this.currentFrame > 60*this.speed) {
+				            if(difference/30 > 60*this.speed) {
 					           	this.isFlip = false;
 
 					           	this.currentFrame = 0;
@@ -321,7 +349,8 @@
 					           	this.center = this.Quads[0].segments[2].point;
 
 
-
+	                            this.flipMove = {slope: flipInfo.slope, intecept: flipInfo.intercept};
+	                            this.moves.push(this.flipMove);
 
 					           	var index = 0;
 
@@ -344,15 +373,19 @@
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
 
+				    		var currentTime = new Date().getTime();
+
+				    		var difference = currentTime - this.startTime;
+
 
 							var angle = parseFloat(document.getElementById("angle").value);
 							if(document.getElementById("angle").value.length === 0)
 								angle = 0;
 
-							console.log(parseFloat(document.getElementById("angle").value));
+							//console.log(parseFloat(document.getElementById("angle").value));
 							this.speed = 60/angle;
-							//this.totalAngle += angle;
-				    		//alert(this.totalAngle);
+
+
 				    		if(angle === 0){
 				    			this.isRotate= false;
 				    		}
@@ -366,6 +399,7 @@
 									}
 								}
 
+							;
 							//var angle = parseInt(document.getElementById("angle").value);
 
 
@@ -390,8 +424,11 @@
 				    				}
 				    			}
 
+								this.rotateMove = {point: rotatePoint.position, angle: angle};
+								this.moves.push(this.rotateMove);
 
-								//console.log(this.botCenter);
+							//	console.log(this.rotateMove)
+									//console.log(this.botCenter);
 
 
 
@@ -432,6 +469,7 @@
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 		    	}
+		    	//console.log(this.moves);
 		    }
 				this.reset = function() {
 
@@ -617,8 +655,7 @@
 		    	}
 		    }
 
-			var triData1 = {position: new Point(400,400), radius: 250};
-
+			var triData1 = {position: new Point(400,400), radius: height/6};
 			var myTri = null;
 			function resetMyTri() {
 				if(myTri) {
@@ -654,6 +691,11 @@
 	      	var flipd, slope, intercept = 0;
 
 
+
+
+	      	var flipd, slope, intercept = 0;
+
+
             var flipLine = new Path();
             flipLine.add(flipPoint.position);
             flipLine.add(flipPoint2.position);
@@ -665,6 +707,7 @@
 			var tempPaths = [];
 			var compoundPath = new Group();
 			var symmetrySymbols = [];
+
 
 			function drawWindow(width, height, positionx, positiony){
 				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
@@ -687,7 +730,7 @@
 	      			path.strokeColor = '#00000';
 					path.add(event.point);
 				}
-				if(toolMode === "rotate"){
+				else if(toolMode === "rotate"){
 					rotatePoint.position = event.point;
 				}
 
@@ -791,33 +834,37 @@
             }
 
             var toolMode = "";
-            var clicked = false;
+            var clickedF = false;
+            var clickedR = false;
+
 
 	      	function but1f() {	//function for rotation button press
 	      		toolMode = "rotate";
 
-	      		if(clicked){
+	      		if(clickedR){
 	      			if(document.getElementById("angle").value.length > 0)
 	      			myTri.setSym(myTri.symmetry.string + "R", false);
 	      		}
-
-	      		clicked = !clicked;
+	      		if(!clickedR){
+	      			clickedR = true;
+	     	    }
 	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
 	      	}
 
 	      	function but2f() {	//function for flip button press
 	      		toolMode = "flip";
+				myTri.startTime = new Date().getTime();
 
 	      		if(flipPoint.position == flipPoint2.position && clicked === true){
 	      			alert("Your line is not long enough");
 	      		}
-	      		else if(clicked){
+	      		else if(clickedR){
 	      			myTri.setSym(myTri.symmetry.string + "F", false);
 	      		}	//appends "F" to the symmetry string
 
-	      		if(!clicked){
-	      			clicked = true;
+	      		if(!clickedR){
+	      			clickedR = true;
 	      		}
 	      		//alert(myTri.symmetry.string);
 	      	}
@@ -831,7 +878,7 @@
 
 			var triVec = [];
 			var changeVectors = [];
-
+			var moves = [];
 
 
 			function saveTri(){
@@ -883,6 +930,10 @@
 					lockedTri.textOne.scale(0);
 					lockedTri.textTwo.scale(0);
 					lockedTri.textThree.scale(0);
+					lockedTri.moves = myTri.moves;
+					lockedTri.description = document.getElementById("description").value;
+
+					document.getElementById("description").value = "";
 
 					//lockedTri.setState();
 
@@ -968,8 +1019,11 @@
 				window.location.href = "Index.html";
 			}
 
+			function toSavedSymmetries() {
+				console.log("a");
 
-
+				window.location.href = "SavedSymmetries.html";
+			}
 
 
 		</script>
