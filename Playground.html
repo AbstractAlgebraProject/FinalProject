@@ -46,6 +46,9 @@
 	        	this.leftQuad = new Path();
 	        	this.rightQuad = new Path();
 	        	this.Quads = [this.leftQuad, this.rightQuad, this.topQuad];
+	        	this.topQuad.name = "top";
+	        	this.leftQuad.name = "left";
+	        	this.rightQuad.name = "right";
 
 				this.originPoints = [];
 
@@ -55,6 +58,11 @@
 	        	this.center = center;
 	        	this.radius = radius;
 	        	this.timeBound = true;
+	        	this.startTime;
+
+	        	this.moves = [];
+	        	this.flipMove = {slope: 0, intercept: new Point(0, 0)};
+	        	this.rotateMove = {point: new Point(0, 0), angle: 0};
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
@@ -285,12 +293,19 @@
 	        	}
 
 	        	this.Update = function(event, pointa, pointb) {
+	        		
+
 	        		if(this.timeBound) {	//check if the triangle should be animated or not
 		        		if(this.isFlip) {	//if the next action is a flip
+		        			var currentTime = new Date().getTime();
+
+		        			var difference = currentTime - this.startTime;
+
+		        			console.log(difference);
 
 				       	    var increment = Math.PI/(60*this.speed);
 
-			         	   	var pointVal = (-Math.cos(increment*this.currentFrame) + 1)/2;
+			         	   	var pointVal = (-Math.cos(increment*difference/30) + 1)/2;
 
 			         	   	var flipInfo = findFlipInfo(flipPoint.position, flipPoint2.position);
 
@@ -305,20 +320,24 @@
                                     this.Quads[i].segments[k].point.y = this.originPoints[index].y + (reflectPoint(this.originPoints[index], flipInfo).y - this.originPoints[index].y) * pointVal;
 
                                     index++;
-                                    console.log(pointVal);
+                                    //console.log(pointVal);
                                 }
                             }
 
 
 				            this.currentFrame++;
-				            if(this.currentFrame > 60*this.speed) {
+				            if(difference/30 > 60*this.speed) {
 					           	this.isFlip = false;
 
 					           	this.currentFrame = 0;
 					           	this.setState();
 					           	this.center = this.Quads[0].segments[2].point;
 
-					           	
+						           	
+	                            this.flipMove = {slope: flipInfo.slope, intecept: flipInfo.intercept};
+	                            this.moves.push(this.flipMove);
+
+	                            //console.log(this.flipMove);
 
 
 					           	var index = 0;
@@ -364,6 +383,7 @@
 									}
 								}
 
+							;
 							//var angle = parseInt(document.getElementById("angle").value);
 
 
@@ -388,8 +408,11 @@
 				    				}
 				    			}
 
+								this.rotateMove = {point: rotatePoint.position, angle: angle};
+								this.moves.push(this.rotateMove);
 
-								//console.log(this.botCenter);
+								console.log(this.rotateMove)
+									//console.log(this.botCenter);
 
 
 
@@ -430,6 +453,7 @@
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 		    	}
+		    	console.log(this.moves);
 		    }
 				this.reset = function() {
 
@@ -574,10 +598,24 @@
 		   
 			var triData1 = {position: new Point(400,400), radius: 250};
 
-	      	var myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
+			var myTri = null;
+			function resetMyTri() {
+				if(myTri) {
+					myTri.topQuad.remove();
+					myTri.rightQuad.remove();
+					myTri.leftQuad.remove();
+					myTri.textOne.remove();
+					myTri.textTwo.remove();
+					myTri.textThree.remove();
+				}
 
-	      	myTri.setSym("", true);	//sets symmetry to empty
-	      	myTri.setState();		//sets initial state
+				myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
+
+	      		myTri.setSym("", true);	//sets symmetry to empty
+	      		myTri.setState();		//sets initial state
+			}
+
+			resetMyTri();
 
 
 	      	var tool = new Tool();
@@ -597,6 +635,7 @@
 
 
 
+	      	var flipd, slope, intercept = 0;
 
 
             var flipLine = new Path();
@@ -775,7 +814,7 @@
 
 	      	function but2f() {	//function for flip button press
 	      		toolMode = "flip";
-
+				myTri.startTime = new Date().getTime();
 	      		if(flipPoint.position == flipPoint2.position && clicked === true){
 	      			alert("Your line is not long enough");
 	      		}
@@ -796,13 +835,9 @@
 				// = null;
 			}
 
-			function resetTri(){
-				myTri.reset();
-			}
-
 			var triVec = [];
 			var changeVectors = [];
-
+			var moves = [];
 
 
 			function saveTri(){
@@ -930,7 +965,8 @@
 			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
 			addButton('#bodyid', "Flip", "Flip", width/5, 6 * height / 16, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", width - 300, height - 200, "btn-lg", toMenu);
-			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetTri);
+
+			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetMyTri);
 			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
 
 
