@@ -302,7 +302,7 @@
 
 					this.currentFrame = 0;
 
-					
+
 					this.currentABC = this.currentABC.charAt(0) + this.currentABC.charAt(2) + this.currentABC.charAt(1);
 
 
@@ -348,13 +348,11 @@
 					           	this.currentFrame = 0;
 					           	this.setState();
 					           	this.center = this.Quads[0].segments[2].point;
-
 						           	
 	                            this.flipMove = {slope: flipInfo.slope, intecept: flipInfo.intercept};
 	                            this.moves.push(this.flipMove);
 
-	                            //console.log(this.flipMove);
-
+	                            
 
 					           	var index = 0;
 
@@ -602,22 +600,67 @@
 		    	return text;
 		    }
 
-		    function sButton(point, size, colorBut, colorTex, text, func) { //class constructor for a clickable button
-		    	var rectangle = new Rectangle(point, size);
-		    	this.button = new Path.Rectangle(rectangle);
-		    	this.button.fillColor = colorBut;
+		    function sButton(point, size, baseColor, hoverColor, textColor, textHoverColor, textStr, callback) { //class constructor for a clickable button
+		    	this.rectangle = new Rectangle(point, size);
+		    	this.button = new Path.Rectangle(this.rectangle);
+		    	this.button.fillColor = baseColor;
+		    	this.baseColor = baseColor;
 
-		    	var offset = new Point(0,0);
-		    	this.text = new pText(point-offset, text, colorTex, 4);
+		    	var boffset = new Point(size.width/2, size.height/2);
 
-		    	var dothis = func;
-		    	this.button.onClick = function(event) {
+		    	this.text = new pText(point+boffset, textStr, textColor, 4);
+                var toffset = new Point(this.text.bounds.width/2, this.text.bounds.width/2);
+
+                this.bgroup = new Group([this.button, this.text])
+                //this.button.text.position = this.button.text.position + toffset;
+
+		    	var dothis = callback;
+
+		    	this.flashing = false;
+		    	this.flashstart = null;
+		    	this.colordiff = null;
+
+                this.setupFlash = function (color, length) {
+                    this.flashColor = color;
+                    this.flashLength = (2*Math.PI) / (length*1000);
+                }
+		    	this.flashToggle =  function() {
+		    		this.flashing = !this.flashing;
+
+		    		this.flashstart = Date.now();
+		    		this.colordiff = color-this.baseColor;
+		    	}
+
+		    	this.doFlashColor = function() {
+		    		var amount = Math.abs(Math.cos((Date.now()-this.flashstart)*(this.flashLength)));
+		    		this.button.fillColor = this.baseColor + this.colordiff*amount;
+
+		    	}
+		    	this.bgroup.onClick = function(event) {
+                    if(this.flashColor != null && this.flashLength != null)
+                    {
+                        this.flashToggle();
+                    }
 		    		dothis(event);
+		    	}
+		    	this.bgroup.onMouseEnter =  function(event) {
+		    		this.children[0].fillColor = hoverColor;
+                    this.children[1].fillColor = textHoverColor;
+		    	}
+		    	this.bgroup.onMouseLeave = function(event) {
+		    		this.children[0].fillColor = baseColor;
+                    this.children[1].fillColor = textColor;
+		    	}
+		    	this.update = function(event) {
+		    		if(this.flashing) {
+		    			this.doFlashColor();
+		    		}
 		    	}
 		    }
 		   
 			var triData1 = {position: new Point(400,400), radius: height/6};
 
+			
 			var myTri = null;
 			function resetMyTri() {
 				if(myTri) {
@@ -639,7 +682,7 @@
 
 
 	      	var tool = new Tool();
-	      	
+
 	      	var rotatePoint = new Path.Circle(myTri.center, 8);
             rotatePoint.strokeColor = 'black';
             rotatePoint.fillColor ='red';
@@ -673,7 +716,7 @@
 			
 			function drawWindow(width, height, positionx, positiony){
 				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-		
+
 				drawingWindow.strokeColor = 'blue';
 				drawingWindow.strokeWidth = 2;
 
@@ -684,8 +727,15 @@
 			}
 
 			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
-			
+
 	      	tool.onMouseDown = function(event){
+	      		var temp = false;
+	      		for(button in buttonArray){
+	      			if(buttonArray[button].button.contains(event.point))
+	      				temp = true;
+	      		}
+
+	      		if(!temp){
 	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
 	      			path = new Path();
 
@@ -702,29 +752,10 @@
 					flipLine.segments[0].point = flipPoint.position;
 					flipLine.segments[1].point = flipPoint2.position;
 				}
-				/*else{
-		      		if(whichpoint) {
-		      			flipPoint.position = event.point;
-	                    whichpoint = !whichpoint;
-		      		} else {
-		      			rotatePoint.position = event.point;
-	                    whichpoint = !whichpoint;
-		      		}
-	             //   flippedpoint2.position = reflectPoint({x : 800, y : 800}, findFlipInfo(rotatePoint.position, flipPoint.position));
-	               // flipLine = new Path.Line(rotatePoint.position, flipPoint.position, 3);
-	               	flipLine.segments[1].point = flipPoint.position;
-	               	flipLine.segments[0].point = rotatePoint.position;
 
-	               	var index = 0;
+				}
+				
 
-	               	for(i = 0; i < 3; i++){
-	               		for(j = 0; j < 4; j++){
-	               			myTri.originPoints[index] = new Point(myTri.Quads[i].segments[j].point.x, myTri.Quads[i].segments[j].point.y);
-	               			index++;
-	               		}
-	               	}
-               }*/
-               // flippedpoint2.position = reflectPoint({x : 200, y : 200}, findFlipInfo(rotatePoint.position, flipPoint.position));
 	      	}
 
 			tool.onMouseDrag = function(event) {
@@ -738,9 +769,9 @@
 				else if (toolMode === 'flip'){
 					flipPoint2.position = event.point;
 
-
-	               	flipLine.segments[1].point = flipPoint.position;
-	               	flipLine.segments[0].point = flipPoint2.position;
+					
+	               	flipLine.segments[0].point = flipPoint.position;
+	               	flipLine.segments[1].point = flipPoint2.position;
 				}
 				//path.position = new Point(500, 500);
 
@@ -753,7 +784,7 @@
 			}
 
 			function addPath() {
-				
+
 				for(i = 0; i < tempPaths.length; i++){
 					compoundPath.addChild(tempPaths[i]);
 					//tempPaths[i].translate(new Point(300, 300));
@@ -831,6 +862,7 @@
 	      		}
 	      		if(!clickedR){
 	      			clickedR = true;
+	      			clickedF = false;
 	     	    }
 	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
@@ -840,15 +872,17 @@
 	      		toolMode = "flip";
 				myTri.startTime = new Date().getTime();
 
-	      		if(flipPoint.position == flipPoint2.position && clicked === true){
+	      		if(flipPoint.position == flipPoint2.position && clickedF === true){
 	      			alert("Your line is not long enough");
 	      		}
-	      		else if(clickedR){
+
+	      		else if(clickedF){
 	      			myTri.setSym(myTri.symmetry.string + "F", false);
 	      		}	//appends "F" to the symmetry string
 
-	      		if(!clickedR){
-	      			clickedR = true;
+	      		if(!clickedF){
+	      			clickedF = true;
+	      			clickedR = false;
 	      		}
 	      		//alert(myTri.symmetry.string);
 	      	}
@@ -926,9 +960,9 @@
 					addPath();
 
 					compoundPath.scale(1/5);
-					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);	
+					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);
 					symmetrySymbols.push(compoundPath.clone());
-					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);	
+					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
 
 					compoundPath.removeChildren();
 				} else {
@@ -957,6 +991,16 @@
 			var lastLoop = new Date;	//fps calculation time
             var lastsym = null;
             var sym = "ABC";
+            //TODO
+
+            var buttonArray = [];
+            buttonArray.push(new sButton(new Point(width / 5, height / 2), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
+            buttonArray.push(new sButton(new Point(width/5, 6 * height / 16), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
+            buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
+            buttonArray.push(new sButton(new Point(width  / 5, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
+            buttonArray.push(new sButton(new Point(width  / 5, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
+
+
 	      	function onFrame(event) {
 	      		//fps calculations
 	      		var thisLoop = new Date;
@@ -980,11 +1024,14 @@
 	      		//symText.content = myTri.symmetry.string + "\n" + myTri.symmetry.string.substring(0, myTri.symmetry.current);
 
 	      		//updates the time-bound triangle
-	      		myTri.Update(event);
+                myTri.Update();
+	      		for(button in buttonArray) {
+                    buttonArray[button].update();
+                }
 
 	      	}
 
-			
+
 
 			function toMenu() {
 				window.location.href = "Index.html";
