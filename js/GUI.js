@@ -46,18 +46,20 @@ function addButton(idName, title, buttonid, xPosition, yPosition, size, callback
     $('#' + buttonid).on('click', callback);
 }
 
-function addTextField(idName, width, placeholder, inputid, xPosition, yPosition, callback) {
+function addTextField(idName, width, placeholder, inputid, xPosition, yPosition) {
     "use strict";
-    function thisCallback() {
+    /*function thisCallback() {
         $("#" + inputid + "-input").val("");
         cb();
-    }
-    $(idName).append('<div class="input-group" style="width: ' + width + ';" id="' + inputid + '-div"><span class="input-group-btn"><button class="btn btn-default" type="button" id="' + inputid + '-button">Go!</button></span><input type="text" class="form-control" placeholder="' + placeholder + '" id="' + inputid + '-input" aria-describedby="sizing-addon1"></div>');
+    }*/
+    $(idName).append('<div class="input-group" style="width: ' + width + ';" id="' + inputid + '-div"><input type="text" class="form-control" placeholder="' + placeholder + '" id="' + inputid + '-input" aria-describedby="sizing-addon1"></div>');
     var checkY = document.getElementById(inputid + "-div").offsetTop, checkX = document.getElementById(inputid + "-div").offsetLeft;
 	document.getElementById(inputid + "-div").style.position = 'absolute';
-    document.getElementById(inputid + "-div").style.left = xPosition - checkX + "px";
-    document.getElementById(inputid + "-div").style.top = yPosition - checkY + "px";
-    $('#' + inputid + "-button").on('click', thisCallback);
+    document.getElementById(inputid + "-div").style.left = xPosition  + "px";
+    document.getElementById(inputid + "-div").style.top = yPosition  + "px";
+   
+
+   // $('#' + inputid + "-button").on('click', thisCallback);
 }
 
 /*

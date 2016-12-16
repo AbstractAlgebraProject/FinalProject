@@ -31,7 +31,7 @@
 			textBox.style.textAlign = "center";
 			textBox.style.width = 300 + "px";
 			textBox.style.height = 100 + "px";
-			textBox.style.left = width / 2 - 50 + "px";
+			textBox.style.left = width / 2 - 150 + "px";
 			textBox.style.top = 3 * height / 4 + "px";
 			textBox.style.fontSize = "20pt";
 			textBox.type = "text";
@@ -39,6 +39,20 @@
 			textBox.id = 'angle';
 
 			document.body.appendChild(textBox);
+
+			var descriptionBox = document.createElement("input");
+			descriptionBox.style.position = "absolute";
+			descriptionBox.style.textAlign = "center";
+			descriptionBox.style.width = width / 4 - 2 + "px";
+			descriptionBox.style.height = 100 + "px";
+			descriptionBox.style.left = 3 * width/4 + "px";
+			descriptionBox.style.top = height/2 + 10 + "px";
+			descriptionBox.style.fontSize = "20pt";
+			descriptionBox.type = "text";
+			
+			descriptionBox.id = 'description';
+
+			document.body.appendChild(descriptionBox);
 
 	        function symTri(center, radius) {
 	        	this.myTriangle = new Path();
@@ -63,6 +77,8 @@
 	        	this.moves = [];
 	        	this.flipMove = {slope: 0, intercept: new Point(0, 0)};
 	        	this.rotateMove = {point: new Point(0, 0), angle: 0};
+
+	        	this.description = "";
 
 	        	for (i = 0; i < 3; i++) 	//create vertices for equilateral triangle
 	        	{
@@ -301,7 +317,7 @@
 
 		        			var difference = currentTime - this.startTime;
 
-		        			console.log(difference);
+		        			//console.log(difference);
 
 				       	    var increment = Math.PI/(60*this.speed);
 
@@ -361,15 +377,19 @@
 				    	else if (this.isRotate) { //if the action is a rotation
 				    		this.myTriangle.rotate(2/this.speed, new Point(rotatePoint.position));
 
+				    		var currentTime = new Date().getTime();
+
+				    		var difference = currentTime - this.startTime;
+
 
 							var angle = parseFloat(document.getElementById("angle").value);
 							if(document.getElementById("angle").value.length === 0)
 								angle = 0;
 
-							console.log(parseFloat(document.getElementById("angle").value));
+							//console.log(parseFloat(document.getElementById("angle").value));
 							this.speed = 60/angle;
-							//this.totalAngle += angle;
-				    		//alert(this.totalAngle);
+							
+
 				    		if(angle === 0){
 				    			this.isRotate= false;
 				    		}
@@ -411,7 +431,7 @@
 								this.rotateMove = {point: rotatePoint.position, angle: angle};
 								this.moves.push(this.rotateMove);
 
-								console.log(this.rotateMove)
+							//	console.log(this.rotateMove)
 									//console.log(this.botCenter);
 
 
@@ -453,7 +473,7 @@
 				   // this.myTriangle.fillColor = new Color(.066, .332, .797);
 
 		    	}
-		    	console.log(this.moves);
+		    	//console.log(this.moves);
 		    }
 				this.reset = function() {
 
@@ -596,7 +616,7 @@
 		    	}
 		    }
 		   
-			var triData1 = {position: new Point(400,400), radius: 250};
+			var triData1 = {position: new Point(400,400), radius: height/6};
 
 			var myTri = null;
 			function resetMyTri() {
@@ -650,6 +670,7 @@
 			var compoundPath = new Group();
 			var symmetrySymbols = [];
 
+			
 			function drawWindow(width, height, positionx, positiony){
 				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
 		
@@ -671,7 +692,7 @@
 	      			path.strokeColor = '#00000';
 					path.add(event.point);
 				}
-				if(toolMode === "rotate"){
+				else if(toolMode === "rotate"){
 					rotatePoint.position = event.point;
 				}
 
@@ -797,17 +818,20 @@
             }
 
             var toolMode = "";
-            var clicked = false;
+            var clickedF = false;
+            var clickedR = false;
+
 
 	      	function but1f() {	//function for rotation button press
 	      		toolMode = "rotate";
 
-	      		if(clicked){
+	      		if(clickedR){
 	      			if(document.getElementById("angle").value.length > 0)
 	      			myTri.setSym(myTri.symmetry.string + "R", false);
 	      		}
-
-	      		clicked = !clicked;
+	      		if(!clickedR){
+	      			clickedR = true;
+	     	    }
 	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
 	      	}
@@ -815,15 +839,16 @@
 	      	function but2f() {	//function for flip button press
 	      		toolMode = "flip";
 				myTri.startTime = new Date().getTime();
+
 	      		if(flipPoint.position == flipPoint2.position && clicked === true){
 	      			alert("Your line is not long enough");
 	      		}
-	      		else if(clicked){
+	      		else if(clickedR){
 	      			myTri.setSym(myTri.symmetry.string + "F", false);
 	      		}	//appends "F" to the symmetry string
 
-	      		if(!clicked){
-	      			clicked = true;
+	      		if(!clickedR){
+	      			clickedR = true;
 	      		}
 	      		//alert(myTri.symmetry.string);
 	      	}
@@ -889,6 +914,10 @@
 					lockedTri.textOne.scale(0);
 					lockedTri.textTwo.scale(0);
 					lockedTri.textThree.scale(0);
+					lockedTri.moves = myTri.moves;
+					lockedTri.description = document.getElementById("description").value;
+
+					document.getElementById("description").value = "";
 
 					//lockedTri.setState();
 
@@ -961,13 +990,21 @@
 				window.location.href = "Index.html";
 			}
 
+			function toSavedSymmetries() {
+				console.log("a");
 
-			addButton("#bodyid", "Rotate", "Rotate", width / 5, height / 2, "btn-md", but1f);
-			addButton('#bodyid', "Flip", "Flip", width/5, 6 * height / 16, "btn-md", but2f);
+				window.location.href = "SavedSymmetries.html";
+			}
+
+
+			addButton("#bodyid", "Rotate", "Rotate", width / 15, height / 2, "btn-md", but1f);
+			addButton('#bodyid', "Flip", "Flip", width/15, 6 * height / 16, "btn-md", but2f);
 			addButton("#bodyid", "Menu", "Menu", width - 300, height - 200, "btn-lg", toMenu);
 
-			addButton("#bodyid", "Reset",  "Reset", width  / 5, height / 4,  "btn-md", resetMyTri);
-			addButton("#bodyid", "Save",  "Save", width  / 5, height / 8,  "btn-md", saveTri);
+			addButton("#bodyid", "Reset",  "Reset", width  / 15, height / 4,  "btn-md", resetMyTri);
+			addButton("#bodyid", "Save",  "Save", width  / 15, height / 8,  "btn-md", saveTri);
+
+			addButton("#bodyid", "View Symmetries", "ViewSymmetries", width / 15, 3 * height / 4, "btn-md", toSavedSymmetries);
 
 
 
