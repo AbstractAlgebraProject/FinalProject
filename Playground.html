@@ -728,28 +728,29 @@
 
 	      	tool.onMouseDown = function(event){
 	      		var temp = false;
+
 	      		for(button in buttonArray){
 	      			if(buttonArray[button].button.contains(event.point))
 	      				temp = true;
 	      		}
 
 	      		if(!temp){
-	      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
-	      			path = new Path();
+		      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+		      			path = new Path();
 
-	      			path.strokeColor = '#00000';
-					path.add(event.point);
-				}
-				else if(toolMode === "rotate"){
-					rotatePoint.position = event.point;
-				}
+		      			path.strokeColor = '#00000';
+						path.add(event.point);
+					}
+					else if(toolMode === "rotate"){
+						rotatePoint.position = event.point;
+					}
 
-				else if(toolMode === "flip"){
-					flipPoint.position = event.point;
-					flipPoint2.position = event.point;
-					flipLine.segments[0].point = flipPoint.position;
-					flipLine.segments[1].point = flipPoint2.position;
-				}
+					else if(toolMode === "flip"){
+						flipPoint.position = event.point;
+						flipPoint2.position = event.point;
+						flipLine.segments[0].point = flipPoint.position;
+						flipLine.segments[1].point = flipPoint2.position;
+					}
 
 				}
 
@@ -943,9 +944,10 @@
 					console.log(position-lockedTri.center);
 					lockedTri.timeBound = false;
 					//lockedTri.setSym(myTri.symmetry.string, true);
-					lockedTri.textOne.scale(0);
-					lockedTri.textTwo.scale(0);
-					lockedTri.textThree.scale(0);
+					lockedTri.textOne.content = "";
+					lockedTri.textTwo.content = "";
+					lockedTri.textThree.content = "";
+					
 					lockedTri.moves = myTri.moves;
 					lockedTri.description = document.getElementById("description").value;
 
@@ -992,11 +994,11 @@
             //TODO
 
             var buttonArray = [];
-            buttonArray.push(new sButton(new Point(width / 5, height / 2), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
-            buttonArray.push(new sButton(new Point(width/5, 6 * height / 16), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
+            buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
+            buttonArray.push(new sButton(new Point(width/15, 6 * height / 16), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
             buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
-            buttonArray.push(new sButton(new Point(width  / 5, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
-            buttonArray.push(new sButton(new Point(width  / 5, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
+            buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
+            buttonArray.push(new sButton(new Point(width  / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
             buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
 
 
