@@ -10,6 +10,7 @@
 		<link href="css/bootstrap.css" rel="stylesheet">
 		<script type="text/javascript" src="dist/paper-full.js"></script>
 		<link href="main.css" rel="stylesheet">
+        <script src="js/cookie.js"></script>
 		<script src="js/GUI.js"></script> <!---include gui -->
 		<script type="text/paperscript" canvas="myCanvas">
 
@@ -140,6 +141,12 @@
 		        this.textThree.scale(3);
 				this.letterSpace = 30;
 				//this.textThree.point = new Point(this.textThree.point.x - this.textThree.bound.width / 2, this.textThree.point.y + this.textThree.bound.height / 2);
+
+                this.removeLabels = function() {
+                    this.textOne.content = "";
+                    this.textTwo.content = "";
+                    this.textThree.content = "";
+                }
 
 				this.setLetterPositions = function()
 				{
@@ -290,7 +297,6 @@
 					this.Quads[0].segments[this.quadFlipCorner[0]].point.x = -this.halfBotLength/2 + this.botCenter;
 
 
-
 					this.Quads[1].segments[0].point.x = this.halfBotLength + this.botCenter;
 					this.Quads[1].segments[this.quadFlipCorner[1]].point.x = this.halfBotLength/2 + this.botCenter;
 
@@ -361,13 +367,9 @@
 					           			index++;
 					           		}
 					           	}
-								//alert(this.quadFlipCorner);
-
 
 					           	this.findPointsToFlip();
 						    }
-
-
 				    	}
 
 
@@ -383,7 +385,6 @@
 							if(document.getElementById("angle").value.length === 0)
 								angle = 0;
 
-							//console.log(parseFloat(document.getElementById("angle").value));
 							this.speed = 60/angle;
 
 
@@ -400,22 +401,12 @@
 									}
 								}
 
-							;
-							//var angle = parseInt(document.getElementById("angle").value);
-
-
-
 				    		this.currentFrame++;
 
 				    		if(this.currentFrame >= angle/2 * this.speed) {
 				    			this.isRotate = false;
 				    			this.currentFrame = 0;
 				    			this.setState();
-				    			//this.currentABC = this.currentABC.charAt(2) + this.currentABC.charAt(0) + this.currentABC.charAt(1);
-
-				    			//this.Quads = [this.Quads[2], this.Quads[0], this.Quads[1]];
-
-				    			//this.Quads.splice(0, 0, this.Quads.splice(2, 1)[0]);
 				    			var index = 0;
 
 				    			for(i = 0; i < 3; i++){
@@ -428,16 +419,9 @@
 								this.rotateMove = {point: rotatePoint.position, angle: angle};
 								this.moves.push(this.rotateMove);
 
-							//	console.log(this.rotateMove)
-									//console.log(this.botCenter);
-
-
-
 				    			this.findPointsToFlip();
 
 				    		}
-
-
 				    	}
 
 				    	 else {
@@ -674,10 +658,10 @@
 
 	      		myTri.setSym("", true);	//sets symmetry to empty
 	      		myTri.setState();		//sets initial state
+                myTri.moves = [];
 			}
 
 			resetMyTri();
-
 
 	      	var tool = new Tool();
 
@@ -692,12 +676,6 @@
             flipPoint2.fillColor ='blue';
 
 	      	var flipd, slope, intercept = 0;
-
-
-
-
-	      	var flipd, slope, intercept = 0;
-
 
             var flipLine = new Path();
             flipLine.add(flipPoint.position);
@@ -963,6 +941,7 @@
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
 
 					compoundPath.removeChildren();
+                    $.cookie("saved", JSON.stringify(triVec));
 				} else {
 					console.log(sym + " has already been saved!");
 				}
@@ -1033,11 +1012,10 @@
 
 
 			function toMenu() {
-				window.location.href = "Index.html";
+				window.location.href = "index.html";
 			}
 
 			function toSavedSymmetries() {
-				console.log("a");
 
 				window.location.href = "SavedSymmetries.html";
 			}

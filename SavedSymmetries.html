@@ -11,27 +11,29 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	
+    <script src="js/cookie.js"></script>
 	<script src="js/GUI.js"></script> <!---include gui -->
-	
-      
+
+
   </head>
   <body id="bodyid" bgcolor = "#6a7f10">
-	
+
 	<script type="text/javascript">
-		
+
 		addTextField("#bodyid", "300px", "Test Placeholder", "testPlaceholder", 100, 425);
-		
-		
-		
+        var saved = JSON.parse($.cookie("saved"));
+        console.log(saved);
+
+
+
 	</script>
     <!--<button class="btn btn-success" type="button">Test</button>
     <button class="btn btn-warning" type="button">Test</button>
     <button class="btn btn-info" type="button">Test</button>-->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    
+
   </body>
 </html>
