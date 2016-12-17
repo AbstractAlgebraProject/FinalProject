@@ -729,6 +729,9 @@
 	      	tool.onMouseDown = function(event){
 	      		var temp = false;
 
+	      		path = new Path();
+	      		path.strokeColor = '#00000';
+
 	      		for(button in buttonArray){
 	      			if(buttonArray[button].button.contains(event.point))
 	      				temp = true;
@@ -736,9 +739,9 @@
 
 	      		if(!temp){
 		      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
-		      			path = new Path();
+		      		//	path = new Path();
 
-		      			path.strokeColor = '#00000';
+		      			//path.strokeColor = '#00000';
 						path.add(event.point);
 					}
 					else if(toolMode === "rotate"){
@@ -760,17 +763,26 @@
 			tool.onMouseDrag = function(event) {
 				// Every drag event, add a segment
 				// to the path at the position of the mouse:
-				if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
-					//console.log("something");
-					path.add(event.point);
-				}
+				var temp = false;
 
-				else if (toolMode === 'flip'){
-					flipPoint2.position = event.point;
+	      		for(button in buttonArray){
+	      			if(buttonArray[button].button.contains(event.point))
+	      				temp = true;
+	      		}
+
+	      		if(!temp){
+					if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+						//console.log("something");
+						path.add(event.point);
+					}
+
+					else if (toolMode === 'flip'){
+						flipPoint2.position = event.point;
 
 
-	               	flipLine.segments[0].point = flipPoint.position;
-	               	flipLine.segments[1].point = flipPoint2.position;
+		               	flipLine.segments[0].point = flipPoint.position;
+		               	flipLine.segments[1].point = flipPoint2.position;
+					}
 				}
 				//path.position = new Point(500, 500);
 
@@ -947,7 +959,7 @@
 					lockedTri.textOne.content = "";
 					lockedTri.textTwo.content = "";
 					lockedTri.textThree.content = "";
-					
+
 					lockedTri.moves = myTri.moves;
 					lockedTri.description = document.getElementById("description").value;
 
@@ -960,8 +972,10 @@
 					addPath();
 
 					compoundPath.scale(1/5);
-					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);
+					//compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);
 					symmetrySymbols.push(compoundPath.clone());
+					symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100, 3 * height / 4 + 50);
+
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
 
 					compoundPath.removeChildren();
@@ -999,7 +1013,7 @@
             buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
             buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
             buttonArray.push(new sButton(new Point(width  / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
-            buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
+            //buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
 
 
 	      	function onFrame(event) {
