@@ -21,8 +21,10 @@
 	<script type="text/javascript">
 
 		addTextField("#bodyid", "300px", "Test Placeholder", "testPlaceholder", 100, 425);
-        var saved = JSON.parse($.cookie("saved"));
-        console.log(saved);
+        //var saved = JSON.parse($.cookie("saved"));
+        var saved = localStorage.getItem("saved");
+        var savedJSON = JSON.parse(saved);
+        console.log(savedJSON);
 
 
 

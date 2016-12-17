@@ -925,7 +925,7 @@
 					lockedTri.textOne.content = "";
 					lockedTri.textTwo.content = "";
 					lockedTri.textThree.content = "";
-					
+
 					lockedTri.moves = myTri.moves;
 					lockedTri.description = document.getElementById("description").value;
 
@@ -943,7 +943,10 @@
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
 
 					compoundPath.removeChildren();
-                    $.cookie("saved", JSON.stringify(triVec));
+
+
+                    localStorage.setItem("saved", JSON.stringify(triVec));
+
 				} else {
 					console.log(sym + " has already been saved!");
 				}
