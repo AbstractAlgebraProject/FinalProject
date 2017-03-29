@@ -25,6 +25,10 @@
 			view.viewSize.width = width;
 			view.viewSize.height = height;
 
+			var popup = document.createElement("modal");
+			popup.id = 'popup';
+			document.body.appendChild(popup);
+
  			var textBox = document.createElement("input");
 
 			textBox.style.position = "absolute";
@@ -35,10 +39,10 @@
 			textBox.style.top = 3 * height / 4 + "px";
 			textBox.style.fontSize = "20pt";
 			textBox.type = "text";
-			textBox.value  = '0';
+			textBox.value  = '';
 			textBox.id = 'angle';
 
-			document.body.appendChild(textBox);
+			//document.body.appendChild(textBox);
 
 			var descriptionBox = document.createElement("input");
 			descriptionBox.style.position = "absolute";
@@ -52,7 +56,7 @@
 
 			descriptionBox.id = 'description';
 
-			document.body.appendChild(descriptionBox);
+			//document.body.appendChild(descriptionBox);
 
 	        function symTri(center, radius) {
 	        	this.myTriangle = new Path();
@@ -379,7 +383,11 @@
 				    		var difference = currentTime - this.startTime;
 
 
-							var angle = parseFloat(document.getElementById("angle").value);
+				    		if(document.getElementById("angle").value == '')
+				    			var angle = 0;
+				    		else
+								var angle = parseFloat(document.getElementById("angle").value);
+
 							if(document.getElementById("angle").value.length === 0)
 								angle = 0;
 
@@ -591,8 +599,11 @@
 				return retpoint;
 			}
 
+			context.font = "40px sans-serif";
+
 		    function pText(point, icont, color, scale) { //constructor function for text located on a point
 		    	var text = new PointText(point);
+		    	text.justification = 'center';
 		    	text.content = icont;
 		    	text.fillColor = color;
 		    	text.scale(scale);
@@ -607,8 +618,9 @@
 
 		    	var boffset = new Point(size.width/2, size.height/2);
 
-		    	this.text = new pText(point+boffset, textStr, textColor, 4);
-                var toffset = new Point(this.text.bounds.width/2, this.text.bounds.width/2);
+		    	this.text = new pText(point + boffset, textStr, textColor, 4);
+
+                //var toffset = new Point(context.measureText(textStr) / 2, this.text.bounds.width/2);
 
                 this.bgroup = new Group([this.button, this.text])
                 //this.button.text.position = this.button.text.position + toffset;
@@ -657,7 +669,7 @@
 		    	}
 		    }
 
-			var triData1 = {position: new Point(400,400), radius: height/6};
+			var triData1 = {position: new Point(400,400), radius: height/4};
 
 			var myTri = null;
 			function resetMyTri() {
@@ -670,14 +682,28 @@
 					myTri.textThree.remove();
 				}
 
-				myTri = new symTri(new Point(width / 2,  height / 2), triData1.radius);	//creates triangle on (500,400) with radius 250
+				myTri = new symTri(new Point(3 * width / 4,  2 * height / 5), triData1.radius);	//creates triangle on (500,400) with radius 250
 
 	      		myTri.setSym("", true);	//sets symmetry to empty
 	      		myTri.setState();		//sets initial state
+
+				rotatePoint = new Path.Circle(myTri.center, 8);
+	            rotatePoint.strokeColor = 'black';
+	            rotatePoint.fillColor ='red';
+	            flipPoint = new Path.Circle(myTri.center, 5);
+	            flipPoint.strokeColor = 'black';
+	            flipPoint.fillColor = 'blue';
+	            flipPoint2 = new Path.Circle(myTri.center, 5);
+	            flipPoint2.strokeColor = 'black';
+	            flipPoint2.fillColor ='blue';
 			}
 
 			resetMyTri();
 
+			textBox.style.left = 3 * width / 4 - 150 + "px";
+			textBox.style.top = 4 * height / 7 + "px";
+			textBox.placeholder = "Angle";
+			document.body.appendChild(textBox);
 
 	      	var tool = new Tool();
 
@@ -724,7 +750,7 @@
 				this.yMax = positiony + height;
 			}
 
-			var drawingWindow = new drawWindow(width/4 - 2, width/4, 3 * width/4, 0);
+			var drawingWindow = new drawWindow(width - 20, height / 4 - 20, 10, 3 * height / 4 - 10);
 
 	      	tool.onMouseDown = function(event){
 	      		var temp = false;
@@ -984,6 +1010,10 @@
 				}
 			}
 
+			function popupWindow(){
+				var newPopup = open('/', 'example', 'width=300, height=300');
+				newPopup.focus();
+			}
 
 
             function makeBaseTri(radius) {		//creating a triangle in known position to compare with
@@ -1008,11 +1038,14 @@
             //TODO
 
             var buttonArray = [];
-            buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
-            buttonArray.push(new sButton(new Point(width/15, 6 * height / 16), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
-            buttonArray.push(new sButton(new Point(width - 300, height - 200), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
+            buttonArray.push(new sButton(new Point(width / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
+            buttonArray.push(new sButton(new Point(width / 15 + 220, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
             buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
-            buttonArray.push(new sButton(new Point(width  / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", saveTri));
+            buttonArray.push(new sButton(new Point(width  / 15 + 220, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Undo", saveTri));
+            buttonArray.push(new sButton(new Point(width  / 15, 3 * height / 8), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save Symmetry", popupWindow));
+
+            buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
+
             //buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
 
 
