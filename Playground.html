@@ -896,8 +896,7 @@
 					return false;
 				}
 				if(!hasValue(triVec, sym) && tempPaths.length > 0) {
-					console.dir(triVec);
-					var position = new Point(triVec.length * 100 + 100, 3*height/4 - 50);
+					var position = new Point(400 + (triVec.length) * 100, 5*height/6 - 50);
 
 					var lockedTri = new symTri(position, 50);
 
@@ -919,7 +918,6 @@
 
 					lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
 
-					console.log(position-lockedTri.center);
 					lockedTri.timeBound = false;
 					//lockedTri.setSym(myTri.symmetry.string, true);
 					lockedTri.textOne.content = "";
@@ -933,16 +931,21 @@
 
 					//lockedTri.setState();
 
-					triVec.push({"tri" : lockedTri, "sym" : sym});
+
 
 					addPath();
 
-					compoundPath.scale(1/5);
-					compoundPath.position = new Point(triVec.length * 100, 3*height/4 + 50);
+
+					compoundPath.position = new Point(400 + (triVec.length) * 100, 5*height/6 + 50);
+                    compoundPath.scale(1/5);
+
 					symmetrySymbols.push(compoundPath.clone());
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
+                    compoundPath.removeChildren();
+                    compoundPath = new Group();
 
-					compoundPath.removeChildren();
+                    triVec.push({"tri" : lockedTri, "sym" : sym});
+                    console.log(symmetrySymbols);
 
 
                     localStorage.setItem("saved", JSON.stringify(triVec));
