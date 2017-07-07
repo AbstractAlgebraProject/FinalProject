@@ -1,0 +1,216 @@
+<html>
+<head>
+<meta charset='UTF-8'>
+	<title> JavaScript Tut1 </title>
+	<body id="bodyid">
+		<link rel="stylesheet" href="css/style.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<script type="text/javascript" src="dist/paper-full.js"></script>
+		<link href="main.css" rel="stylesheet">
+        <script src="js/cookie.js"></script>
+		<script src="js/GUI.js"></script> <!---include gui -->
+		<script type="text/paperscript" canvas="myCanvas">
+
+            var c = document.getElementById("myCanvas");
+            var context = c.getContext("2d");
+            var width = $(document).width();
+            var height = $(document).height();
+
+            //document.write(c.width);
+
+            //c.height = height;
+
+            view.viewSize.width = width;
+            view.viewSize.height = height;
+
+            function pText(point, icont, color, scale) { //constructor function for text located on a point
+                var text = new PointText(point);
+                text.justification = 'center';
+                text.content = icont;
+                text.fillColor = color;
+                text.scale(scale);
+                return text;
+            }
+            function sButton(point, size, baseColor, hoverColor, textColor, textHoverColor, textStr, callback) { //class constructor for a clickable button
+                this.rectangle = new Rectangle(point, size);
+                this.button = new Path.Rectangle(this.rectangle);
+                this.button.fillColor = baseColor;
+                this.baseColor = baseColor;
+
+                var boffset = new Point(size.width/2, size.height/2);
+
+                this.text = new pText(point + boffset, textStr, textColor, 4);
+
+                //var toffset = new Point(context.measureText(textStr) / 2, this.text.bounds.width/2);
+
+                this.bgroup = new Group([this.button, this.text])
+                //this.button.text.position = this.button.text.position + toffset;
+
+                var dothis = callback;
+
+                this.flashing = false;
+                this.flashstart = null;
+                this.colordiff = null;
+
+                this.setupFlash = function (color, length) {
+                    this.flashColor = color;
+                    this.flashLength = (2*Math.PI) / (length*1000);
+                }
+                this.flashToggle =  function() {
+                    this.flashing = !this.flashing;
+
+                    this.flashstart = Date.now();
+                    this.colordiff = color-this.baseColor;
+                }
+
+                this.doFlashColor = function() {
+                    var amount = Math.abs(Math.cos((Date.now()-this.flashstart)*(this.flashLength)));
+                    this.button.fillColor = this.baseColor + this.colordiff*amount;
+
+                }
+                this.bgroup.onClick = function(event) {
+                    if(this.flashColor != null && this.flashLength != null)
+                    {
+                        this.flashToggle();
+                    }
+                    dothis(event);
+                }
+                this.bgroup.onMouseEnter =  function(event) {
+                    this.children[0].fillColor = hoverColor;
+                    this.children[1].fillColor = textHoverColor;
+                }
+                this.bgroup.onMouseLeave = function(event) {
+                    this.children[0].fillColor = baseColor;
+                    this.children[1].fillColor = textColor;
+                }
+                this.update = function(event) {
+                    if(this.flashing) {
+                        this.doFlashColor();
+                    }
+                }
+            }
+            function drawWindow(width, height, positionx, positiony){
+                var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
+
+                drawingWindow.strokeColor = 'blue';
+                drawingWindow.strokeWidth = 2;
+
+                this.xMin = positionx;
+                this.xMax = positionx + width;
+                this.yMin = positiony;
+                this.yMax = positiony + height;
+            }
+
+            var drawingWindow = new drawWindow(height/2, height / 2, width/2 - height/4, height / 10);
+
+            var descriptionBox = document.createElement("input");
+            descriptionBox.style.position = "absolute";
+            descriptionBox.style.textAlign = "center";
+            descriptionBox.style.width = 3*width / 4 - 2 + "px";
+            descriptionBox.style.height = 100 + "px";
+            descriptionBox.style.left = width/8 + "px";
+            descriptionBox.style.top = height/1.6+ "px";
+            descriptionBox.style.fontSize = "20pt";
+            descriptionBox.type = "text";
+
+            descriptionBox.id = 'description';
+            descriptionBox.placeholder = "Describe the symmetry";
+            document.body.appendChild(descriptionBox);
+
+            var tool = new Tool();
+            var tempPaths = [];
+            var compoundPath = new Group();
+            buttonArray = []
+
+
+            tool.onMouseDown = function(event){
+                var temp = false;
+
+                path = new Path();
+                path.strokeColor = '#00000';
+
+                for(button in buttonArray){
+                    if(buttonArray[button].button.contains(event.point))
+                        temp = true;
+                }
+
+                if(!temp){
+                    if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+                    //	path = new Path();
+
+                        //path.strokeColor = '#00000';
+                        path.add(event.point);
+                    }
+                }
+            }
+
+            tool.onMouseDrag = function(event) {
+                // Every drag event, add a segment
+                // to the path at the position of the mouse:
+                var temp = false;
+
+                for(button in buttonArray){
+                    if(buttonArray[button].button.contains(event.point))
+                        temp = true;
+                }
+
+                if(!temp){
+                    if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
+                        //console.log("something");
+                        path.add(event.point);
+                    }
+                }
+
+            }
+
+            tool.onMouseUp = function(event){
+                //path.smooth();
+                tempPaths.push(path);
+
+            }
+
+            function addPath() {
+
+                for(i = 0; i < tempPaths.length; i++){
+                    compoundPath.addChild(tempPaths[i]);
+                    //tempPaths[i].translate(new Point(300, 300));
+                    //tempPaths[i].visible = true;
+                }
+                tempPaths = [];
+            }
+            callback = null
+            window.addEventListener('message', function(event) { //TODO makethis not a security flaw I think
+                callback = event.data
+            })
+            save = false;
+            descriptionText = ""
+            function closeSelfSave() {
+                console.log(opener)
+                window.opener.popupSave(document.getElementById("description").value, compoundPath)
+                save = true;
+                window.close()
+            }
+
+            function closeSelf() {
+                window.close();
+            }
+
+            buttonArray.push(new sButton(new Point(width / 2 - 100 - 110, height / 1.25), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Cancel", closeSelf));
+            buttonArray.push(new sButton(new Point(width / 2 + 10, height / 1.25), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save", closeSelfSave));
+
+            function onFrame(event) {
+                //fps calculations
+
+                for(button in buttonArray) {
+                    buttonArray[button].update();
+                }
+
+            }
+
+        </script>
+</head>
+    <body>
+        <canvas id="myCanvas" style="z-index:1" resize></canvas>
+    </body>
+</html>

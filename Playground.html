@@ -45,7 +45,7 @@
 
 			//document.body.appendChild(textBox);
 
-			var descriptionBox = document.createElement("input");
+			var descriptionBox = document.createElement("vinput");
 			descriptionBox.style.position = "absolute";
 			descriptionBox.style.textAlign = "center";
 			descriptionBox.style.width = width / 4 - 2 + "px";
@@ -712,26 +712,7 @@
             flipLine.strokeColor = 'black';
 
             var whichpoint = false;
-
-			var path;
-			var tempPaths = [];
-			var compoundPath = new Group();
-			var symmetrySymbols = [];
-
-
-			function drawWindow(width, height, positionx, positiony){
-				var drawingWindow = new Path.Rectangle(new Point(positionx, positiony), width, height);
-
-				drawingWindow.strokeColor = 'blue';
-				drawingWindow.strokeWidth = 2;
-
-				this.xMin = positionx;
-				this.xMax = positionx + width;
-				this.yMin = positiony;
-				this.yMax = positiony + height;
-			}
-
-			var drawingWindow = new drawWindow(width - 20, height / 4 - 20, 10, 3 * height / 4 - 10);
+            var symmetrySymbols = [];
 
 	      	tool.onMouseDown = function(event){
 	      		var temp = false;
@@ -745,13 +726,7 @@
 	      		}
 
 	      		if(!temp){
-		      		if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
-		      		//	path = new Path();
-
-		      			//path.strokeColor = '#00000';
-						path.add(event.point);
-					}
-					else if(toolMode === "rotate"){
+		      	    if(toolMode === "rotate"){
 						rotatePoint.position = event.point;
 					}
 
@@ -778,12 +753,7 @@
 	      		}
 
 	      		if(!temp){
-					if(event.point.x < drawingWindow.xMax && event.point.y < drawingWindow.yMax && event.point.x > drawingWindow.xMin && event.point.y > drawingWindow.yMin){
-						//console.log("something");
-						path.add(event.point);
-					}
-
-					else if (toolMode === 'flip'){
+					if (toolMode === 'flip'){
 						flipPoint2.position = event.point;
 
 
@@ -793,22 +763,6 @@
 				}
 				//path.position = new Point(500, 500);
 
-			}
-
-			tool.onMouseUp = function(event){
-				//path.smooth();
-				tempPaths.push(path);
-
-			}
-
-			function addPath() {
-
-				for(i = 0; i < tempPaths.length; i++){
-					compoundPath.addChild(tempPaths[i]);
-					//tempPaths[i].translate(new Point(300, 300));
-					//tempPaths[i].visible = true;
-				}
-				tempPaths = [];
 			}
 
 
@@ -821,14 +775,12 @@
                 return {"slope" : slope, "intercept" : intercept}
             }
 
-
 	      	function reflectPoint(pointa, flipinfo) //calculate reflection based on slope and intercept and point to reflect
 			{
                 flipinfo.flipd = (pointa.x + (pointa.y - flipinfo.intercept)*flipinfo.slope)/(1+(flipinfo.slope*flipinfo.slope));       //weird equation constant
 				var p = {x : (2*flipinfo.flipd)-pointa.x, y : (2*flipinfo.flipd*flipinfo.slope) - pointa.y + (2*flipinfo.intercept)}    //finding the x and y
                 return p;
 			}
-
 
             function circleCollide(p1, p2, radius)
             {
@@ -917,7 +869,8 @@
 			var moves = [];
 
 
-			function saveTri(){
+			function saveTri(text, drawing){
+                console.log("SAVING TRIANGLE")
 				function hasValue(arr, v) {
 					for(i=0; i < arr.length; i++) {
                         function arraysEqual(a, b) {
@@ -936,7 +889,10 @@
 					}
 					return false;
 				}
-				if(!hasValue(triVec, sym) && tempPaths.length > 0) {
+
+				if(!hasValue(triVec, sym)) {
+
+
 					var position = new Point(400 + (triVec.length) * 100, 5*height/6 - 50);
 
 					var lockedTri = new symTri(position, 50);
@@ -966,16 +922,9 @@
 					lockedTri.textThree.content = "";
 
 					lockedTri.moves = myTri.moves;
-					lockedTri.description = document.getElementById("description").value;
+					lockedTri.description = text
 
-					document.getElementById("description").value = "";
-
-					//lockedTri.setState();
-
-
-
-					addPath();
-
+                    compoundPath = drawing;
 
 
 					compoundPath.position = new Point(400 + (triVec.length) * 100, 5*height/6 + 50);
@@ -983,6 +932,7 @@
 
 
 					symmetrySymbols.push(compoundPath.clone());
+                    console.log(symmetrySymbols)
 					symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100, 3 * height / 4 + 50);
 
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
@@ -990,8 +940,6 @@
                     compoundPath = new Group();
 
                     triVec.push({"tri" : lockedTri, "sym" : sym});
-                    console.log(symmetrySymbols);
-
 
                     localStorage.setItem("saved", JSON.stringify(triVec));
 
@@ -1000,10 +948,16 @@
 				}
 			}
 
-			function popupWindow(){
-				var newPopup = open('/', 'example', 'width=300, height=300');
-				newPopup.focus();
-			}
+
+            window.popupSave = function(text, drawing){
+                console.log("EHRE")
+                saveTri(text, drawing);
+            }
+            function popupWindow(){
+                window.open('savepopup.html', 'Save Triangle', 'width=600, height=600');
+                //document.getElementById("popup").style.display = "block"
+            }
+
 
 
             function makeBaseTri(radius) {		//creating a triangle in known position to compare with
@@ -1031,7 +985,8 @@
             buttonArray.push(new sButton(new Point(width / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
             buttonArray.push(new sButton(new Point(width / 15 + 220, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
             buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
-            buttonArray.push(new sButton(new Point(width  / 15 + 220, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Undo", saveTri));
+            //TODO MAKE UNDO BUTTON WORK
+            //buttonArray.push(new sButton(new Point(width  / 15 + 220, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Undo", saveTri));
             buttonArray.push(new sButton(new Point(width  / 15, 3 * height / 8), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save Symmetry", popupWindow));
 
             buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
