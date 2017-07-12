@@ -37,13 +37,13 @@
 			textBox.style.width = 300 + "px";
 			textBox.style.height = 100 + "px";
 			textBox.style.left = width / 2 - 150 + "px";
-			textBox.style.top = 3 * height / 4 + "px";
+			textBox.style.top = height / 2 + "px";
 			textBox.style.fontSize = "20pt";
 			textBox.type = "text";
 			textBox.value  = '';
 			textBox.id = 'angle';
 
-			//document.body.appendChild(textBox);
+			document.body.appendChild(textBox);
 
 			var descriptionBox = document.createElement("vinput");
 			descriptionBox.style.position = "absolute";
@@ -666,7 +666,7 @@
 					myTri.textThree.remove();
 				}
 
-				myTri = new symTri(new Point(3 * width / 4,  2 * height / 5), triData1.radius);	//creates triangle on (500,400) with radius 250
+				myTri = new symTri(new Point(3 * width / 4,  height / 3), triData1.radius);	//creates triangle on (500,400) with radius 250
 
 	      		myTri.setSym("", true);	//sets symmetry to empty
 	      		myTri.setState();		//sets initial state
@@ -688,7 +688,7 @@
 
 
 			textBox.style.left = 3 * width / 4 - 150 + "px";
-			textBox.style.top = 4 * height / 7 + "px";
+			textBox.style.top = height / 2 + "px";
 			textBox.placeholder = "Angle";
 			document.body.appendChild(textBox);
 
@@ -867,7 +867,24 @@
 			var triVec = [];
 			var changeVectors = [];
 			var moves = [];
+			
+          	var compoundPath = new Group();
 
+          	function symmetryWindow(x, y, width, height){
+          		var labelBox = new Path.Rectangle(new Point(x, y), new Size(width, height / 3));
+          		labelBox.fillColor = '#b3b3b3';
+          		labelBox.strokeColor = 'black';
+
+          		var windowText = new PointText(new Point(x + width / 2, y + height / 5));
+          		windowText.justification = 'center';
+          		windowText.content = "Symmetries Discovered";
+          		windowText.fontSize = 30 + "px";
+
+          		var symBox = new Path.Rectangle(new Point(x, y), new Size(width, height));
+          		symBox.strokeColor = 'black';
+          	}
+
+          	symmetryWindow(width / 15, 2 * height / 3, width - 2*width/15, 3 * height / 10);
 
 			function saveTri(text, drawing){
                 console.log("SAVING TRIANGLE")
@@ -893,7 +910,7 @@
 				if(!hasValue(triVec, sym)) {
 
 
-					var position = new Point(400 + (triVec.length) * 100, 5*height/6 - 50);
+					var position = new Point(2 * width / 15 + (triVec.length) * 150, 2*height/3 + 4 * height / 20);
 
 					var lockedTri = new symTri(position, 50);
 
@@ -922,24 +939,29 @@
 					lockedTri.textThree.content = "";
 
 					lockedTri.moves = myTri.moves;
-					lockedTri.description = text
+					lockedTri.description = text;
 
-                    compoundPath = drawing;
+                   	for(i = 0; i < drawing.length; i++){
+                   		compoundPath.addChild(new Path(drawing[i]));
+                   	}
+                   	compoundPath.strokeColor = 'black';
 
-
-					compoundPath.position = new Point(400 + (triVec.length) * 100, 5*height/6 + 50);
+					
                     compoundPath.scale(1/5);
 
+                    
 
+	 				
 					symmetrySymbols.push(compoundPath.clone());
-                    console.log(symmetrySymbols)
-					symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100, 3 * height / 4 + 50);
-
+                    
+					symmetrySymbols[symmetrySymbols.length-1].position = new Point(2* width / 15 + (triVec.length * 150), 2*height/3 + 3 * height / 20 + 100);
+					console.log(symmetrySymbols[symmetrySymbols.length-1].position);
+triVec.push({"tri" : lockedTri, "sym" : sym});
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
                     compoundPath.removeChildren();
                     compoundPath = new Group();
 
-                    triVec.push({"tri" : lockedTri, "sym" : sym});
+                   
 
                     localStorage.setItem("saved", JSON.stringify(triVec));
 
@@ -951,6 +973,7 @@
 
             window.popupSave = function(text, drawing){
                 console.log("EHRE")
+
                 saveTri(text, drawing);
             }
             function popupWindow(){

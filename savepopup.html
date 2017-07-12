@@ -10,9 +10,9 @@
 		<link href="main.css" rel="stylesheet">
         <script src="js/cookie.js"></script>
 		<script src="js/GUI.js"></script> <!---include gui -->
-		<script type="text/paperscript" canvas="myCanvas">
+		<script type="text/paperscript" canvas="myCanvas2">
 
-            var c = document.getElementById("myCanvas");
+            var c = document.getElementById("myCanvas2");
             var context = c.getContext("2d");
             var width = $(document).width();
             var height = $(document).height();
@@ -120,6 +120,7 @@
 
             var tool = new Tool();
             var tempPaths = [];
+            var data = [];
             var compoundPath = new Group();
             buttonArray = []
 
@@ -174,6 +175,7 @@
 
                 for(i = 0; i < tempPaths.length; i++){
                     compoundPath.addChild(tempPaths[i]);
+                    data.push(tempPaths[i].pathData);
                     //tempPaths[i].translate(new Point(300, 300));
                     //tempPaths[i].visible = true;
                 }
@@ -183,16 +185,21 @@
             window.addEventListener('message', function(event) { //TODO makethis not a security flaw I think
                 callback = event.data
             })
+
             save = false;
             descriptionText = ""
+
             function closeSelfSave() {
+                addPath();
                 console.log(opener)
-                window.opener.popupSave(document.getElementById("description").value, compoundPath)
+                window.opener.popupSave(document.getElementById("description").value, data)
+                
                 save = true;
                 window.close()
             }
 
             function closeSelf() {
+                //addPath();
                 window.close();
             }
 
@@ -211,6 +218,6 @@
         </script>
 </head>
     <body>
-        <canvas id="myCanvas" style="z-index:1" resize></canvas>
+        <canvas id="myCanvas2" style="z-index:1" resize></canvas>
     </body>
 </html>
