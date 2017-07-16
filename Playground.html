@@ -596,7 +596,7 @@
 
 		    function sButton(point, size, baseColor, hoverColor, textColor, textHoverColor, textStr, callback) { //class constructor for a clickable button
 		    	this.rectangle = new Rectangle(point, size);
-		    	this.button = new Path.Rectangle(this.rectangle);
+		    	this.button = new Path.Rectangle(this.rectangle, new Size(20, 20));
 		    	this.button.fillColor = baseColor;
 		    	this.baseColor = baseColor;
 
@@ -650,6 +650,12 @@
 		    		if(this.flashing) {
 		    			this.doFlashColor();
 		    		}
+		    	}
+		    	this.setColor = function(newColor){
+		    		this.baseColor = newColor;
+		    		baseColor = newColor;
+		    		this.button.fillColor = newColor;
+		    		hoverColor = newColor;
 		    	}
 		    }
 
@@ -833,6 +839,8 @@
 	      		if(!clickedR){
 	      			clickedR = true;
 	      			clickedF = false;
+	      			buttonArray[0].setColor(new Color('#696969'));
+	      			buttonArray[1].setColor(new Color('#b3b3b3'));
 	     	    }
 	      			//appends "R" to the symmetry string
 	      		//alert(myTri.symmetry.string);
@@ -853,7 +861,10 @@
 	      		if(!clickedF){
 	      			clickedF = true;
 	      			clickedR = false;
-	      		}
+	      			buttonArray[1].setColor(new Color('#696969'));
+	      			buttonArray[0].setColor(new Color('#b3b3b3'));
+	     	    }
+	      		
 	      		//alert(myTri.symmetry.string);
 	      	}
 
@@ -869,6 +880,7 @@
 			var moves = [];
 			
           	var compoundPath = new Group();
+          	var symButtons = [];
 
           	function symmetryWindow(x, y, width, height){
           		var labelBox = new Path.Rectangle(new Point(x, y), new Size(width, height / 3));
@@ -930,7 +942,7 @@
 						}
 					}
 
-					lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point);
+					lockedTri.moveTri(position - lockedTri.Quads[0].segments[2].point + 2000);
 
 					lockedTri.timeBound = false;
 					//lockedTri.setSym(myTri.symmetry.string, true);
@@ -947,16 +959,25 @@
                    	compoundPath.strokeColor = 'black';
 
 					
-                    compoundPath.scale(1/5);
+                    compoundPath.scale(1/2);
 
                     
 
-	 				
-					symmetrySymbols.push(compoundPath.clone());
-                    
-					symmetrySymbols[symmetrySymbols.length-1].position = new Point(2* width / 15 + (triVec.length * 150), 2*height/3 + 3 * height / 20 + 100);
+                    var point = new Point((width / 15) + triVec.length * 13 * width / 15 / 6, 2*height/3 + 4 * height / 20);
+					var tempRect = new Rectangle(new Point(point.x + 10, point.y - 75), new Size(13 * width / 15 / 6 - 10, 150));
+					var rectPath = new Path.Rectangle(tempRect, new Size(20, 20));
+					rectPath.strokeColor = 'black';
+
+	 				symButtons.push(rectPath);
+
+
+	 				symmetrySymbols.push(compoundPath.clone());
+
+					symmetrySymbols[symmetrySymbols.length-1].position = new Point(symButtons[symButtons.length-1].position.x, 2*height/3 + 4 * height / 20);
 					console.log(symmetrySymbols[symmetrySymbols.length-1].position);
-triVec.push({"tri" : lockedTri, "sym" : sym});
+
+	
+					triVec.push({"tri" : lockedTri, "sym" : sym});
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
                     compoundPath.removeChildren();
                     compoundPath = new Group();
@@ -972,7 +993,7 @@ triVec.push({"tri" : lockedTri, "sym" : sym});
 
 
             window.popupSave = function(text, drawing){
-                console.log("EHRE")
+                console.log("HERE")
 
                 saveTri(text, drawing);
             }
@@ -996,6 +1017,13 @@ triVec.push({"tri" : lockedTri, "sym" : sym});
                 return tri;
             }
 
+            function undo(){
+            	if(clickedF)
+            		but2f();
+
+            	else if(clickedR){}
+            }
+
             var baseTriUp = makeBaseTri(myTri.radius);  //base triangle for comparing symettries
             var realTri = []; //store coordinates for defining points of dynamic triangle
             var saveable = false;       //whether or not a drawing can be made and the symettry saved.
@@ -1005,14 +1033,14 @@ triVec.push({"tri" : lockedTri, "sym" : sym});
             //TODO
 
             var buttonArray = [];
-            buttonArray.push(new sButton(new Point(width / 15, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
-            buttonArray.push(new sButton(new Point(width / 15 + 220, height / 8), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
-            buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
+            buttonArray.push(new sButton(new Point(width / 15, height / 8), new Size(200, 100), new Color("#b3b3b3"), new Color("#b3b3b3"), new Color("#fff"), new Color("#36454f"), "Rotate", but1f));
+            buttonArray.push(new sButton(new Point(width / 15 + 220, height / 8), new Size(200, 100), new Color("#b3b3b3"), new Color("#b3b3b3"), new Color("#fff"), new Color("#36454f"), "Flip", but2f));
+            buttonArray.push(new sButton(new Point(width  / 15, height / 4), new Size(200, 100), new Color("#b3b3b3"), new Color("#b3b3b3"), new Color("#fff"), new Color("#36454f"), "Reset", resetMyTri));
             //TODO MAKE UNDO BUTTON WORK
-            //buttonArray.push(new sButton(new Point(width  / 15 + 220, height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Undo", saveTri));
+            buttonArray.push(new sButton(new Point(width  / 15 + 220, height / 4), new Size(200, 100), new Color("#b3b3b3"), new Color("#b3b3b3"), new Color("#fff"), new Color("#36454f"), "Undo", saveTri));
             buttonArray.push(new sButton(new Point(width  / 15, 3 * height / 8), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Save Symmetry", popupWindow));
 
-            buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(420, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
+           // buttonArray.push(new sButton(new Point(width / 15, height / 2), new Size(420, 100), new Color("#b3b3b3"), new Color("#b3b3b3"), new Color("#fff"), new Color("#36454f"), "Menu", toMenu));
 
             //buttonArray.push(new sButton(new Point(width / 15, 3 * height / 4), new Size(200, 100), new Color("#6a7f10"), new Color("#6a7f10"), new Color("#fff"), new Color("#36454f"), "Symettry Table", toSavedSymmetries));
 
