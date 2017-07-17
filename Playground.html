@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset='UTF-8'>
-	<title> JavaScript Tut1 </title>
+	<title> Symmetry Playground </title>
 	<body id="bodyid">
 		<link rel="stylesheet" href="css/style.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -96,21 +96,21 @@
 	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[1].point.y)/2));
 	        	this.topQuad.add(new Point(center.x, center.y));
 	        	this.topQuad.add(new Point((this.myTriangle.segments[0].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[0].point.y + this.myTriangle.segments[2].point.y)/2));
-	        	this.topQuad.fillColor = new Color(.066, .332, .797);
+                this.topQuad.fillColor = new Color("#FF5746")
 	        	this.topQuad.closed = true;
 
 	        	this.leftQuad.add(new Point(this.myTriangle.segments[1].point));
 	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[2].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[2].point.y)/2));
 	        	this.leftQuad.add(new Point(center.x, center.y));
 	        	this.leftQuad.add(new Point((this.myTriangle.segments[1].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[1].point.y + this.myTriangle.segments[0].point.y)/2));
-	        	this.leftQuad.fillColor = new Color(.666, .332, .797);
+                this.leftQuad.fillColor = new Color("#505050")
 	        	this.leftQuad.closed = true;
 
 	        	this.rightQuad.add(new Point(this.myTriangle.segments[2].point));
 	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[0].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[0].point.y)/2));
 	        	this.rightQuad.add(new Point(center.x, center.y));
 	        	this.rightQuad.add(new Point((this.myTriangle.segments[2].point.x + this.myTriangle.segments[1].point.x)/2, (this.myTriangle.segments[2].point.y + this.myTriangle.segments[1].point.y)/2));
-	        	this.rightQuad.fillColor = new Color(.066, .632, .797);
+                this.rightQuad.fillColor = new Color(.066, .332, .797)
 	        	this.rightQuad.closed = true;
 
 	        	var index = 0;
@@ -864,7 +864,7 @@
 	      			buttonArray[1].setColor(new Color('#696969'));
 	      			buttonArray[0].setColor(new Color('#b3b3b3'));
 	     	    }
-	      		
+
 	      		//alert(myTri.symmetry.string);
 	      	}
 
@@ -878,7 +878,7 @@
 			var triVec = [];
 			var changeVectors = [];
 			var moves = [];
-			
+
           	var compoundPath = new Group();
           	var symButtons = [];
 
@@ -958,10 +958,10 @@
                    	}
                    	compoundPath.strokeColor = 'black';
 
-					
+
                     compoundPath.scale(1/2);
 
-                    
+
 
                     var point = new Point((width / 15) + triVec.length * 13 * width / 15 / 6, 2*height/3 + 4 * height / 20);
 					var tempRect = new Rectangle(new Point(point.x + 10, point.y - 75), new Size(13 * width / 15 / 6 - 10, 150));
@@ -976,13 +976,13 @@
 					symmetrySymbols[symmetrySymbols.length-1].position = new Point(symButtons[symButtons.length-1].position.x, 2*height/3 + 4 * height / 20);
 					console.log(symmetrySymbols[symmetrySymbols.length-1].position);
 
-	
+
 					triVec.push({"tri" : lockedTri, "sym" : sym});
 					//symmetrySymbols[symmetrySymbols.length-1].position = new Point(triVec.length * 100 + 100, 200);
                     compoundPath.removeChildren();
                     compoundPath = new Group();
 
-                   
+
 
                     localStorage.setItem("saved", JSON.stringify(triVec));
 
@@ -998,7 +998,7 @@
                 saveTri(text, drawing);
             }
             function popupWindow(){
-                window.open('savepopup.html', 'Save Triangle', 'width=600, height=600');
+                window.open('savepopup.html', 'Save Triangle', 'width=800, height=500');
                 //document.getElementById("popup").style.display = "block"
             }
 

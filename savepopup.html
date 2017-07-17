@@ -101,16 +101,17 @@
                 this.yMin = positiony;
                 this.yMax = positiony + height;
             }
-
-            var drawingWindow = new drawWindow(height/2, height / 2, width/2 - height/4, height / 10);
+            var exclamantion = new pText(new Point(width/2, height/12), "You found a symmetry! Let's record and make a button for it.", new Color("#000000"), 2.2)
+            var drawingText = new pText(new Point(width*14/15 - height/2 + height/4, height / 3 - width/32 - 25), "Sketch a symbol for button.", new Color("#000000"), 2)
+            var drawingWindow = new drawWindow(height/2, height / 2, width*14/15 - height/2, height / 3 - width/32);
 
             var descriptionBox = document.createElement("input");
             descriptionBox.style.position = "absolute";
             descriptionBox.style.textAlign = "center";
-            descriptionBox.style.width = 3*width / 4 - 2 + "px";
-            descriptionBox.style.height = 100 + "px";
-            descriptionBox.style.left = width/8 + "px";
-            descriptionBox.style.top = height/1.6+ "px";
+            descriptionBox.style.width = width/2 + "px";
+            descriptionBox.style.height = width/4 + "px";
+            descriptionBox.style.left = width/15 + "px";
+            descriptionBox.style.top = height/3+ "px";
             descriptionBox.style.fontSize = "20pt";
             descriptionBox.type = "text";
 
@@ -193,7 +194,7 @@
                 addPath();
                 console.log(opener)
                 window.opener.popupSave(document.getElementById("description").value, data)
-                
+
                 save = true;
                 window.close()
             }
